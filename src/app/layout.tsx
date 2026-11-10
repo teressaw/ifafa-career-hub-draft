@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   description: 'A volunteer-verified directory of returnships, career re-entry programmes and employment pathways in Ireland for accompanying partners of Irish diplomatic staff.',
 };
 
-export const viewport: Viewport = { themeColor: '#0f4d3c', width: 'device-width', initialScale: 1 };
+export const viewport: Viewport = { themeColor: '#126342', width: 'device-width', initialScale: 1 };
 
 export default function RootLayout({ children }: LayoutProps<'/'>) {
   return (
