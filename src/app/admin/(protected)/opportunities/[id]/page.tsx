@@ -2,7 +2,8 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { requireVolunteer } from '@/lib/auth';
 import { applicationStatus, formatDate, needsVerification } from '@/lib/status';
-import { PUBLICATION_STATES, type Opportunity } from '@/lib/types';
+import { PUBLICATION_STATES } from '@/lib/types';
+import { getOpportunity } from '@/lib/admin-data';
 import { OpportunityForm } from '@/components/admin/opportunity-form';
 import { DeleteControl, PublicationControls, VerifyControl } from '@/components/admin/listing-actions';
 import { ExampleBadge, StatusBadge } from '@/components/ui';
@@ -11,18 +12,16 @@ export const dynamic = 'force-dynamic';
 
 export default async function EditOpportunity({ params, searchParams }: PageProps<'/admin/opportunities/[id]'>) {
   const { id } = await params;
-  if (!/^[0-9a-f-]{36}$/i.test(id)) notFound();
-  const { supabase, role } = await requireVolunteer();
-  const { data, error } = await supabase.from('opportunities').select('*').eq('id', id).maybeSingle();
-  if (error) throw new Error('Could not load this listing: ' + error.message);
-  if (!data) notFound();
-  const o = data as Opportunity;
+  const ctx = await requireVolunteer();
+  const o = await getOpportunity(ctx, id);
+  if (!o) notFound();
+  const role = ctx.role;
   const status = applicationStatus(o);
   const created = (await searchParams).created;
 
   return (
     <div className="container-page py-10">
-      <Link href="/admin" className="inline-flex min-h-11 items-center text-sm font-semibold text-forest hover:underline">← Listings</Link>
+      <Link href="/admin/listings" className="inline-flex min-h-11 items-center text-sm font-semibold text-forest hover:underline">← Listings</Link>
       {created && <p role="status" className="mt-2 rounded-xl bg-open-bg px-4 py-3 text-sm text-open">Listing created as a draft.</p>}
       <div className="mt-2 flex flex-wrap items-center gap-2"><StatusBadge status={status.status} />{o.is_example && <ExampleBadge />}</div>
       <h1 className="mt-3 font-serif text-3xl font-semibold">{o.programme_name}</h1>

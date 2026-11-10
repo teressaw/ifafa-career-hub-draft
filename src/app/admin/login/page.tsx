@@ -5,7 +5,7 @@ import { AuthShell } from '../auth-shell';
 
 export const dynamic = 'force-dynamic';
 export default async function LoginPage({ searchParams }: PageProps<'/admin/login'>) {
-  if (!isSupabaseConfigured()) redirect('/admin/setup');
+  if (!isSupabaseConfigured()) redirect('/admin');
   const expired = (await searchParams).link === 'expired';
   return (
     <AuthShell title="Sign in" intro="For authorised volunteers who maintain the directory. Accounts are created by an IFAFA administrator.">

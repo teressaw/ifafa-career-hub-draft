@@ -1,88 +1,61 @@
 import Link from 'next/link';
 import { requireVolunteer } from '@/lib/auth';
-import { applicationStatus, formatDate, needsVerification } from '@/lib/status';
-import { PUBLICATION_STATES, type Opportunity, type PublicationState } from '@/lib/types';
-import { EmptyState, ExampleBadge, StatusBadge } from '@/components/ui';
+import { workload } from '@/lib/admin-data';
 
 export const dynamic = 'force-dynamic';
 
-const VIEWS = { attention: 'Needs checking', draft: 'Drafts', published: 'Published', archived: 'Archived', all: 'All' } as const;
-type View = keyof typeof VIEWS;
+function Tile({ href, value, label, detail, tone = 'plain' }: { href: string; value: number; label: string; detail: string; tone?: 'plain' | 'attention' }) {
+  return (
+    <Link href={href} className={`card block p-5 transition hover:border-forest/40 ${tone === 'attention' && value > 0 ? 'border-unverified/30 bg-unverified-bg/40' : ''}`}>
+      <p className="text-sm font-semibold text-muted">{label}</p>
+      <p className={`mt-1 font-serif text-4xl font-semibold ${tone === 'attention' && value > 0 ? 'text-unverified' : 'text-ink'}`}>{value}</p>
+      <p className="mt-1 text-sm text-ink-soft">{detail}</p>
+    </Link>
+  );
+}
 
-const PUB_STYLE: Record<PublicationState, string> = { draft: 'bg-stone-2 text-ink-soft', published: 'bg-mint text-forest', archived: 'bg-closed-bg text-closed' };
-
-export default async function AdminHome({ searchParams }: PageProps<'/admin'>) {
-  const sp = await searchParams;
-  const view: View = (typeof sp.view === 'string' && sp.view in VIEWS ? sp.view : 'attention') as View;
-  const q = typeof sp.q === 'string' ? sp.q.trim().toLowerCase().slice(0, 100) : '';
-  const { supabase } = await requireVolunteer();
-  const { data, error } = await supabase.from('opportunities')
-    .select('id,slug,employer,programme_name,publication,last_verified_on,dates_verified,opens_on,closes_on,recorded_status,is_example,updated_at')
-    .order('updated_at', { ascending: false }).limit(1000);
-  if (error) throw new Error('Could not load listings: ' + error.message);
-  const all = (data ?? []) as Opportunity[];
-  const attention = (o: Opportunity) => o.publication !== 'archived' && needsVerification(o);
-  const counts: Record<View, number> = {
-    attention: all.filter(attention).length, draft: all.filter(o => o.publication === 'draft').length,
-    published: all.filter(o => o.publication === 'published').length, archived: all.filter(o => o.publication === 'archived').length, all: all.length,
-  };
-  const rows = all.filter(o => (view === 'all' || (view === 'attention' ? attention(o) : o.publication === view)) && (!q || `${o.employer} ${o.programme_name}`.toLowerCase().includes(q)));
-
+export default async function Overview() {
+  const ctx = await requireVolunteer();
+  const w = await workload(ctx);
+  const nothingToDo = w.minutes === 0;
   return (
     <div className="container-page py-10">
-      {sp.deleted && <p role="status" className="mb-6 rounded-xl bg-open-bg px-4 py-3 text-sm text-open">The listing was deleted.</p>}
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div><h1 className="font-serif text-3xl font-semibold">Listings</h1><p className="mt-1 text-ink-soft">Add, check and publish opportunities. Listings not checked for 4 months appear under “Needs checking”.</p></div>
-        <Link href="/admin/opportunities/new" className="btn-primary">+ Add a listing</Link>
+      <p className="eyebrow">This week</p>
+      <h1 className="mt-2 font-serif text-3xl font-semibold sm:text-4xl">Keeping the directory up to date</h1>
+      <p className="mt-2 max-w-2xl text-ink-soft">The hub watches official pages for you and flags only what needs a person. Volunteers review changes and suggestions — they don’t have to search the web.</p>
+
+      <section aria-labelledby="effort" className="card mt-8 flex flex-col gap-4 bg-forest p-6 text-white sm:flex-row sm:items-center sm:justify-between sm:p-8">
+        <div>
+          <h2 id="effort" className="text-sm font-semibold uppercase tracking-wider text-white/75">Estimated volunteer time</h2>
+          <p className="mt-1 font-serif text-4xl font-semibold">{nothingToDo ? 'Nothing due' : `About ${Math.max(5, Math.ceil(w.minutes / 5) * 5)} minutes`}</p>
+          <p className="mt-1 text-sm text-white/80">{nothingToDo ? (ctx.mode === 'demo' ? 'Run a live check of the watched sources to see how changes are flagged.' : 'Everything is checked and current.') : 'Based on the items below: about 5 minutes per changed page, 4 per suggestion and 3 per routine re-check.'}</p>
+        </div>
+        <Link href={w.changed || ctx.mode === 'demo' ? '/admin/sources' : '/admin/listings'} className="btn shrink-0 bg-white text-forest hover:bg-mint">{ctx.mode === 'demo' ? 'Check the sources live →' : 'Start →'}</Link>
+      </section>
+
+      <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <Tile href="/admin/sources" value={w.changed} label="Pages that changed" detail={`${w.sources} official pages watched${w.unchecked ? ` · ${w.unchecked} not checked yet` : ''}`} tone="attention" />
+        <Tile href="/admin/inbox" value={w.suggestions} label="Suggestions to review" detail="Drafts pre-filled from structured job data" tone="attention" />
+        <Tile href="/admin/listings?view=attention" value={w.due} label="Listings due a re-check" detail="Not verified in the last 4 months" tone="attention" />
+        <Tile href="/admin/sources" value={w.problems} label="Pages we couldn’t check" detail="Blocked or unreachable — check by hand" tone="attention" />
       </div>
 
-      <div className="mt-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <nav aria-label="Filter listings" className="-mx-1 flex gap-1 overflow-x-auto pb-1">
-          {(Object.keys(VIEWS) as View[]).map(v => (
-            <Link key={v} href={`/admin?view=${v}`} aria-current={v === view ? 'page' : undefined}
-              className={`inline-flex min-h-10 shrink-0 items-center gap-2 rounded-full px-4 text-sm font-semibold ${v === view ? 'bg-forest text-white' : 'bg-white text-ink-soft ring-1 ring-line hover:text-forest'}`}>
-              {VIEWS[v]} <span className={`rounded-full px-1.5 text-xs ${v === view ? 'bg-white/20' : 'bg-stone-2'}`}>{counts[v]}</span>
-            </Link>
-          ))}
-        </nav>
-        <form method="get" className="flex gap-2" role="search">
-          <input type="hidden" name="view" value={view} />
-          <label htmlFor="admin-q" className="sr-only">Search listings</label>
-          <input id="admin-q" name="q" defaultValue={q} placeholder="Search employer or programme" className="field min-h-10 rounded-full md:w-72" />
-          <button className="btn-secondary min-h-10">Search</button>
-        </form>
-      </div>
+      <section aria-labelledby="how" className="mt-12 grid gap-6 lg:grid-cols-3">
+        <h2 id="how" className="sr-only">How the work is shared</h2>
+        {[
+          ['1', 'The hub watches', 'Official programme and careers pages are checked automatically on a schedule. Sites that ask not to be read by automated tools are respected and flagged for a person instead.'],
+          ['2', 'It flags and drafts', 'When a page changes, the hub shows what changed. Where a page publishes structured job details, it pre-fills a draft — every field shows exactly where it came from.'],
+          ['3', 'A volunteer confirms', 'Nothing is published automatically. A volunteer checks the source, confirms dates and publishes. That keeps the directory accurate.'],
+        ].map(([n, t, d]) => (
+          <div key={n} className="card p-6">
+            <span aria-hidden="true" className="grid size-9 place-items-center rounded-full bg-mint font-semibold text-forest">{n}</span>
+            <h3 className="mt-3 font-serif text-xl font-semibold">{t}</h3>
+            <p className="mt-2 text-sm leading-relaxed text-ink-soft">{d}</p>
+          </div>
+        ))}
+      </section>
 
-      <div className="mt-6">
-        {rows.length === 0 ? (
-          <EmptyState title={view === 'attention' ? 'Everything is up to date' : 'No listings here'} action={<Link href="/admin/opportunities/new" className="btn-primary">Add a listing</Link>}>
-            {view === 'attention' ? 'No published or draft listings need re-checking right now.' : 'Try another tab, or add a new listing.'}
-          </EmptyState>
-        ) : (
-          <ul className="card divide-y divide-line">
-            {rows.map(o => {
-              const s = applicationStatus(o).status, stale = needsVerification(o);
-              return (
-                <li key={o.id} className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:gap-6 sm:px-6">
-                  <div className="min-w-0 flex-1">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${PUB_STYLE[o.publication]}`}>{PUBLICATION_STATES[o.publication]}</span>
-                      <StatusBadge status={s} />{o.is_example && <ExampleBadge />}
-                    </div>
-                    <Link href={`/admin/opportunities/${o.id}`} className="mt-2 block font-semibold text-ink hover:text-forest hover:underline">{o.programme_name}</Link>
-                    <p className="text-sm text-muted">{o.employer}</p>
-                  </div>
-                  <div className="text-sm sm:w-48 sm:text-right">
-                    <p className={stale ? 'font-semibold text-unverified' : 'text-ink-soft'}>{o.last_verified_on ? `Checked ${formatDate(o.last_verified_on)}` : 'Never checked'}</p>
-                    {stale && <p className="text-xs text-unverified">Needs checking</p>}
-                  </div>
-                  <Link href={`/admin/opportunities/${o.id}`} className="btn-secondary min-h-10 shrink-0">Edit</Link>
-                </li>
-              );
-            })}
-          </ul>
-        )}
-      </div>
+      <p className="mt-8 text-sm text-muted">{w.published} published · {w.listings} listings in total. <Link href="/admin/opportunities/new" className="font-semibold text-forest hover:underline">Add a listing by hand</Link> or <Link href="/admin/import" className="font-semibold text-forest hover:underline">import one from a link</Link>.</p>
     </div>
   );
 }

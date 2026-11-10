@@ -36,6 +36,7 @@ Other commands:
 ### 2.1 Create the project and tables
 1. Create a project at https://supabase.com (an EU region such as Ireland/`eu-west-1` is a sensible choice).
 2. Open **SQL Editor**, paste the whole of `supabase/migrations/20261110000000_init.sql`, and run it. This creates the tables, constraints and row-level security policies.
+   Then run `supabase/migrations/20261110010000_monitoring.sql` (watched sources and the suggestions inbox; it also adds the eight official Irish pages the prototype watches).
 3. *Optional:* run `supabase/seed.sql` to load five fictional example listings. Remove them before launch:
    ```sql
    delete from public.opportunities where is_example;
@@ -80,7 +81,7 @@ NEXT_PUBLIC_SITE_URL=http://localhost:3000
 ```
 Restart `npm run dev`. The directory now reads from the database, and `/admin` shows the sign-in page.
 
-> **Never** put the Supabase *secret* / *service_role* key in this app. It isn’t needed, and it bypasses row-level security.
+> Don’t put the Supabase *secret* / *service_role* key in this app for normal use. It bypasses row-level security. The one exception is the **optional** daily check described in section 4, which reads it on the server only.
 
 ---
 
@@ -112,6 +113,28 @@ All dates use Irish time.
 
 ---
 
+### Keeping listings current with little effort
+The aim is that a volunteer spends minutes a week, not hours. The **Overview** page estimates the time from what is waiting.
+
+- **Watched sources** lists official pages (Civil Service ARC, Deloitte, PM Group, Women ReBOOT, UCC Rejuvenate, Back for Business, Women Returners, Back to Work Connect). **Check now** reads the page and shows *what changed* since the last check. A changed page stays flagged until someone clicks **Mark as reviewed**.
+- Where a page publishes structured job data (schema.org `JobPosting`), the hub turns it into a **suggestion** in the **Inbox**. **Review and create draft** opens the normal form pre-filled. Each pre-filled field says where it came from (for example `JobPosting.validThrough`). Fields the page doesn’t state are left empty.
+- **Import from a link** does the same for any single page a volunteer has found.
+- **Nothing is published automatically.** Suggested dates still need the “I confirmed these dates” tick. Sentences that mention dates are shown as hints only and never filled in.
+- **Politeness:** the checker identifies itself as `IFAFA-CareerHub` and obeys each site’s robots.txt. It checks one page at a time, stops after 10 seconds or 2.5 MB, and refuses private network addresses. It never logs in or submits forms.
+
+### Demo mode
+Without Supabase settings the volunteer area opens as a read-only demo. It uses the example listings and the real watched sources. **Check now** and **Import from a link** fetch the real pages live, but nothing is saved. Once you add the Supabase variables, sign-in is required and demo mode switches off automatically.
+
+### Optional: daily automatic checks
+`vercel.json` runs `/api/cron/check-sources` daily at 06:17 UTC. It does nothing unless you set **both** of these in Vercel → Settings → Environment Variables (Production only):
+
+| Variable | Value |
+| --- | --- |
+| `CRON_SECRET` | a long random string (`openssl rand -hex 32`). Vercel sends it automatically. |
+| `SUPABASE_SECRET_KEY` | Supabase → Project Settings → API Keys → **secret** key |
+
+> ⚠️ **Security review:** the secret key bypasses row-level security. It is read only by that one server route, and it must **never** be given a `NEXT_PUBLIC_` name. The route only updates watched sources and adds inbox suggestions. It cannot publish anything. If you’d rather not hold this key at all, skip this step: volunteers can press **Check all sources now** once a week instead.
+
 ## 5. Security model and review checklist
 
 **What protects the data**
@@ -127,7 +150,7 @@ All dates use Irish time.
 **Please review before launch**
 - [ ] Sign-ups disabled (2.2) and email templates updated (2.3).
 - [ ] Custom SMTP configured, and Supabase Auth rate limits reviewed.
-- [ ] Only the publishable/anon key is in Vercel — no secret key anywhere in the app.
+- [ ] Only the publishable/anon key is public. `SUPABASE_SECRET_KEY` is either absent, or set for Production only, with `CRON_SECRET` also set (optional daily check).
 - [ ] Supabase → **Advisors → Security** shows no warnings for this project.
 - [ ] Volunteers use strong passwords. Consider enabling multi-factor authentication (Authentication → MFA) for admins.
 - [ ] Example listings removed (`delete … where is_example;`).
@@ -141,7 +164,9 @@ createdb ifafa_test
 psql ifafa_test -f supabase/tests/supabase_stub.sql
 psql ifafa_test -f supabase/migrations/20261110000000_init.sql
 psql ifafa_test -f supabase/seed.sql
+psql ifafa_test -f supabase/migrations/20261110010000_monitoring.sql
 psql ifafa_test -f supabase/tests/rls_test.sql
+psql ifafa_test -f supabase/tests/rls_monitoring_test.sql
 ```
 Lines marked *should fail* must print a permission or policy error.
 
@@ -174,4 +199,4 @@ tests/unit.test.ts        Unit tests
 ```
 
 ## Not included in this version (by design)
-Automated scraping, AI matching, member accounts and email notifications.
+AI matching, member accounts and email notifications. Automated checking is limited to *watching* official pages and *suggesting* drafts. The hub doesn’t crawl sites or publish anything without a volunteer.

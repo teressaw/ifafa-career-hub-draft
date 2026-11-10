@@ -1,9 +1,12 @@
+import { redirect } from 'next/navigation';
 import { requireVolunteer } from '@/lib/auth';
 import { PasswordForm } from '@/components/admin/auth-forms';
 
 export const dynamic = 'force-dynamic';
 export default async function Account() {
-  const { user, role } = await requireVolunteer();
+  const ctx = await requireVolunteer();
+  if (ctx.mode === 'demo') redirect('/admin');
+  const { user, role } = ctx;
   return (
     <div className="container-page max-w-xl py-10">
       <h1 className="font-serif text-3xl font-semibold">Your account</h1>
