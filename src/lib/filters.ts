@@ -1,4 +1,4 @@
-import { APPLICATION_STATUSES, CAREER_BREAK, PROGRAMME_TYPES, REGIONS, SECTORS, WORK_ARRANGEMENTS, type ApplicationStatus, type Opportunity } from './types';
+import { ABROAD, APPLICATION_STATUSES, CAREER_BREAK, PROGRAMME_TYPES, REGIONS, SECTORS, WORK_ARRANGEMENTS, type ApplicationStatus, type Opportunity } from './types';
 import { applicationStatus, todayInIreland } from './status';
 
 export const FILTERS = {
@@ -7,20 +7,49 @@ export const FILTERS = {
   arrangement: { label: 'Working arrangement', options: WORK_ARRANGEMENTS },
   type: { label: 'Programme type', options: PROGRAMME_TYPES },
   careerBreak: { label: 'Career-break eligibility', options: CAREER_BREAK },
+  abroad: { label: 'Working from outside Ireland', options: ABROAD },
   status: { label: 'Application status', options: APPLICATION_STATUSES },
 } as const;
 export type FilterKey = keyof typeof FILTERS;
+
+/**
+ * Career pathways from the homepage. Each is a fixed, explainable rule over fields volunteers verify —
+ * never a guess. The wording matches the pathway cards.
+ */
+export const PATHS = {
+  abroad: {
+    label: 'I’m living overseas',
+    title: 'Working while abroad',
+    explains: 'Showing listings confirmed as possible from outside Ireland. “Remote” alone is not enough, so remote roles without that confirmation are not included.',
+    match: (o: Opportunity) => o.abroad_eligibility === 'yes',
+  },
+  return: {
+    label: 'I’m preparing to return',
+    title: 'Preparing to return to Ireland',
+    explains: 'Showing returnships and career re-entry programmes in Ireland.',
+    match: (o: Opportunity) => o.programme_type === 'returnship' || o.programme_type === 'reentry',
+  },
+  restart: {
+    label: 'I’m restarting my career',
+    title: 'Restarting your career',
+    explains: 'Showing programmes designed for, or open to, people returning after a career break, plus training and mentoring.',
+    match: (o: Opportunity) => o.career_break !== 'not-specified' || ['training', 'mentoring', 'reentry'].includes(o.programme_type),
+  },
+} as const;
+export type PathKey = keyof typeof PATHS;
 
 export const SORTS = { relevance: 'Most relevant', closing: 'Closing soonest', verified: 'Recently verified', az: 'A–Z by employer' } as const;
 export type SortKey = keyof typeof SORTS;
 
 export interface Query {
   q: string;
+  path: PathKey | '';
   sector: string;
   region: string;
   arrangement: string;
   type: string;
   careerBreak: string;
+  abroad: string;
   status: string;
   sort: SortKey;
 }
@@ -34,7 +63,8 @@ export function parseQuery(raw: Raw): Query {
   const sort = one(raw.sort);
   return {
     q: one(raw.q).trim().slice(0, 100),
-    sector: pick('sector'), region: pick('region'), arrangement: pick('arrangement'), type: pick('type'), careerBreak: pick('careerBreak'), status: pick('status'),
+    path: (one(raw.path) in PATHS ? one(raw.path) : '') as PathKey | '',
+    sector: pick('sector'), region: pick('region'), arrangement: pick('arrangement'), type: pick('type'), careerBreak: pick('careerBreak'), abroad: pick('abroad'), status: pick('status'),
     sort: (sort in SORTS ? sort : 'relevance') as SortKey,
   };
 }
@@ -47,7 +77,7 @@ export function activeFilterCount(q: Query): number {
 export function queryHref(q: Query, change: Partial<Query>): string {
   const next = { ...q, ...change };
   const p = new URLSearchParams();
-  (['q', ...Object.keys(FILTERS), 'sort'] as (keyof Query)[]).forEach(k => { const v = next[k]; if (v && !(k === 'sort' && v === 'relevance')) p.set(k, String(v)); });
+  (['q', 'path', ...Object.keys(FILTERS), 'sort'] as (keyof Query)[]).forEach(k => { const v = next[k]; if (v && !(k === 'sort' && v === 'relevance')) p.set(k, String(v)); });
   const s = p.toString();
   return '/opportunities' + (s ? '?' + s : '');
 }
@@ -64,7 +94,9 @@ export function applyQuery(items: Opportunity[], q: Query, today = todayInIrelan
     (!q.region || o.region === q.region) &&
     (!q.arrangement || o.work_arrangement === q.arrangement) &&
     (!q.type || o.programme_type === q.type) &&
+    (!q.path || PATHS[q.path].match(o)) &&
     (!q.careerBreak || o.career_break === q.careerBreak) &&
+    (!q.abroad || o.abroad_eligibility === q.abroad) &&
     (!q.status || o.appStatus === q.status) &&
     (!terms.length || terms.every(t => [o.employer, o.programme_name, o.summary, o.description, o.location, o.eligibility ?? '', SECTORS[o.sector], PROGRAMME_TYPES[o.programme_type]].join(' ').toLowerCase().includes(t))));
 

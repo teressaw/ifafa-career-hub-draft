@@ -1,4 +1,5 @@
 import 'server-only';
+import type { Resource } from './resources';
 import type { VolunteerCtx } from './auth';
 import type { Opportunity } from './types';
 import { sampleOpportunities } from './sample-data';
@@ -18,7 +19,7 @@ export interface Suggestion {
   created_at: string;
 }
 
-const ADMIN_COLS = 'id,slug,employer,programme_name,summary,description,eligibility,duration,compensation,location,region,work_arrangement,programme_type,career_break,sector,opens_on,closes_on,dates_verified,recorded_status,application_url,source_url,last_verified_on,publication,is_example,updated_at';
+const ADMIN_COLS = 'id,slug,employer,programme_name,summary,description,eligibility,duration,compensation,location,region,work_arrangement,programme_type,career_break,abroad_eligibility,sector,opens_on,closes_on,dates_verified,recorded_status,application_url,source_url,last_verified_on,publication,is_example,updated_at';
 
 export async function listOpportunities(ctx: VolunteerCtx): Promise<Opportunity[]> {
   if (ctx.mode === 'demo') return sampleOpportunities();
@@ -66,4 +67,19 @@ export async function workload(ctx: VolunteerCtx) {
   // Rough, conservative minutes per task, based on opening the source and comparing.
   const minutes = changed * 5 + suggestions.length * 4 + due * 3 + problems * 2;
   return { listings: opps.length, published: opps.filter(o => o.publication === 'published').length, due, sources: sources.filter(s => s.active).length, changed, problems, unchecked, suggestions: suggestions.length, minutes };
+}
+
+/* ---------- Events, support and resources ---------- */
+const RESOURCE_ADMIN_COLS = 'id,kind,title,provider,summary,details,url,audiences,cost,format,location,event_date,event_time,date_verified,last_verified_on,publication,updated_at';
+export async function listResources(ctx: VolunteerCtx): Promise<Resource[]> {
+  if (ctx.mode === 'demo') return [];
+  const { data, error } = await ctx.supabase.from('resources').select(RESOURCE_ADMIN_COLS).order('updated_at', { ascending: false }).limit(1000);
+  if (error) throw new Error('Could not load events and resources: ' + error.message);
+  return (data ?? []) as Resource[];
+}
+export async function getResource(ctx: VolunteerCtx, id: string): Promise<Resource | null> {
+  if (ctx.mode === 'demo' || !/^[0-9a-f-]{36}$/i.test(id)) return null;
+  const { data, error } = await ctx.supabase.from('resources').select(RESOURCE_ADMIN_COLS).eq('id', id).maybeSingle();
+  if (error) throw new Error('Could not load this item: ' + error.message);
+  return data as Resource | null;
 }

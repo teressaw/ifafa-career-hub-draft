@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getPublishedBySlug } from '@/lib/opportunities';
 import { applicationStatus, formatDate } from '@/lib/status';
-import { CAREER_BREAK, PROGRAMME_TYPES, REGIONS, SECTORS, WORK_ARRANGEMENTS } from '@/lib/types';
+import { ABROAD, CAREER_BREAK, PROGRAMME_TYPES, REGIONS, SECTORS, WORK_ARRANGEMENTS } from '@/lib/types';
 import { ExampleBadge, Notice, Paragraphs, StatusBadge } from '@/components/ui';
 
 export const dynamic = 'force-dynamic';
@@ -71,6 +71,7 @@ export default async function OpportunityPage({ params }: PageProps<'/opportunit
               <Fact term="Sector" value={SECTORS[o.sector]} />
               <Fact term="Location" value={`${o.location} · ${REGIONS[o.region]}`} />
               <Fact term="Working arrangement" value={WORK_ARRANGEMENTS[o.work_arrangement]} />
+              <Fact term="From outside Ireland" value={ABROAD[o.abroad_eligibility]} muted={o.abroad_eligibility === 'not-stated'} />
               <Fact term="Duration" value={o.duration ?? NOT_CONFIRMED} muted={!o.duration} />
               <Fact term="Compensation" value={o.compensation ?? NOT_CONFIRMED} muted={!o.compensation} />
             </dl>

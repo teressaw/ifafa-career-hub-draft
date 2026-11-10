@@ -1,7 +1,7 @@
 'use client';
 import { useActionState, useState } from 'react';
 import { saveOpportunity, type FormState } from '@/app/admin/actions';
-import { CAREER_BREAK, PROGRAMME_TYPES, RECORDED_STATUSES, REGIONS, SECTORS, WORK_ARRANGEMENTS, type Opportunity } from '@/lib/types';
+import { ABROAD, CAREER_BREAK, PROGRAMME_TYPES, RECORDED_STATUSES, REGIONS, SECTORS, WORK_ARRANGEMENTS, type Opportunity } from '@/lib/types';
 import { formatDate } from '@/lib/status';
 
 type Values = Partial<Opportunity>;
@@ -61,7 +61,7 @@ export function OpportunityForm({ initial, prefill, provenance, suggestionId }: 
   const [state, action, pending] = useActionState(saveOpportunity, {});
   // After a failed save, show exactly what the volunteer typed (React resets forms after an action).
   const sv = state.values;
-  const v: Values = sv ? { ...initial, ...sv, dates_verified: sv.dates_verified === 'on', is_example: sv.is_example === 'on' } as Values : initial ?? { career_break: 'not-specified', work_arrangement: 'not-specified', ...prefill };
+  const v: Values = sv ? { ...initial, ...sv, dates_verified: sv.dates_verified === 'on', is_example: sv.is_example === 'on' } as Values : initial ?? { career_break: 'not-specified', abroad_eligibility: 'not-stated', work_arrangement: 'not-specified', ...prefill };
   return <FormBody key={state.seq ?? 0} v={v} state={state} action={action} pending={pending} initial={initial} prov={provenance} suggestionId={suggestionId} />;
 }
 
@@ -102,6 +102,10 @@ function FormBody({ v, state, action, pending, initial, prov, suggestionId }: { 
           <Choice name="region" label="Location filter" options={REGIONS} v={v} errors={e} prov={prov} />
           <Choice name="work_arrangement" label="Working arrangement" options={WORK_ARRANGEMENTS} v={v} errors={e} prov={prov} />
           <Choice name="career_break" label="Career-break eligibility" options={CAREER_BREAK} v={v} errors={e} />
+          <div className="sm:col-span-2">
+            <Choice name="abroad_eligibility" label="Can it be done from outside Ireland?" options={ABROAD} v={v} errors={e} />
+            <span className="field-hint">Choose “Can be done from outside Ireland” only if the source says so. “Remote” on its own usually means remote within Ireland. This drives the homepage’s “I’m living overseas” path.</span>
+          </div>
         </div>
       </Section>
 

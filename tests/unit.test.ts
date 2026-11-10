@@ -115,3 +115,40 @@ test('robots.txt: longest rule wins and our own group takes priority', () => {
   assert.equal(robotsAllows(star, '/doc.pdf.html'), true);
   assert.equal(robotsAllows(robotsRules('User-agent: *\nDisallow:\n'), '/anything'), true);
 });
+
+/* ---------- Career pathways and events/support/resources ---------- */
+import { PATHS } from '../src/lib/filters';
+import { validateResource, forPath } from '../src/lib/resources';
+
+test('pathways: overseas needs confirmed eligibility, not just "remote"', () => {
+  const o = sampleOpportunities()[0];
+  assert.equal(PATHS.abroad.match({ ...o, work_arrangement: 'remote', abroad_eligibility: 'not-stated' }), false);
+  assert.equal(PATHS.abroad.match({ ...o, abroad_eligibility: 'yes' }), true);
+  assert.equal(PATHS.return.match({ ...o, programme_type: 'job' }), false);
+  assert.equal(PATHS.restart.match({ ...o, programme_type: 'job', career_break: 'not-specified' }), false);
+  assert.equal(parseQuery({ path: 'nonsense' }).path, '');
+  assert.ok(applyQuery(sampleOpportunities(), parseQuery({ path: 'return' }), T).every(x => ['returnship', 'reentry'].includes(x.programme_type)));
+});
+
+const rfd = (o: Record<string, string | string[]>) => { const f = new FormData(); for (const [k, v] of Object.entries(o)) for (const x of [v].flat()) f.append(k, x); return f; };
+const okRes = { kind: 'event', title: 'Returners webinar', provider: 'A provider', summary: 'A short summary of it.', url: 'https://example.org/e' };
+
+test('resources: event dates are dropped unless confirmed', () => {
+  const r = validateResource(rfd({ ...okRes, event_date: '2026-12-01' }), T);
+  assert.equal(r.data?.event_date, null);
+  const c = validateResource(rfd({ ...okRes, event_date: '2026-12-01', date_verified: 'on' }), T);
+  assert.equal(c.data?.event_date, '2026-12-01');
+  assert.ok(validateResource(rfd({ ...okRes, date_verified: 'on' }), T).errors?.event_date);
+});
+
+test('resources: rejects bad links and unknown audiences are ignored', () => {
+  assert.ok(validateResource(rfd({ ...okRes, url: 'javascript:alert(1)' }), T).errors?.url);
+  assert.deepEqual(validateResource(rfd({ ...okRes, kind: 'support', audiences: ['return', 'everyone'] }), T).data?.audiences, ['return']);
+  assert.equal(validateResource(rfd({ ...okRes, kind: 'support', event_date: '2026-12-01', date_verified: 'on' }), T).data?.event_date, null);
+});
+
+test('resources: no audiences means relevant to every path', () => {
+  assert.equal(forPath({ audiences: [] }, 'abroad'), true);
+  assert.equal(forPath({ audiences: ['return'] }, 'abroad'), false);
+  assert.equal(forPath({ audiences: ['return'] }, ''), true);
+});

@@ -1,20 +1,22 @@
 @import "tailwindcss";
 
-/* IFAFA Career Hub — design tokens.
-   Deep forest green and warm stone, with a restrained gold accent. All text colours meet WCAG AA on their backgrounds. */
+/* IFAFA Career Hub — design tokens (from the 2026 homepage redesign).
+   Navy text, IFAFA green, warm cream background. All text colours meet WCAG AA on their backgrounds. */
 @theme {
   --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+  --font-serif: Georgia, "Iowan Old Style", "Palatino Linotype", Palatino, serif;
 
-  --color-ink: #14231d;
-  --color-ink-soft: #3c4a44;
-  --color-muted: #5a665f;
-  --color-line: #e3e0d8;
-  --color-stone: #f7f5f0;
-  --color-stone-2: #efebe2;
-  --color-forest: #0f4d3c;
-  --color-forest-2: #146b53;
-  --color-mint: #e3f1ea;
+  --color-ink: #14233c;        /* navy */
+  --color-ink-soft: #41536b;
+  --color-muted: #566579;
+  --color-line: #e5e9e7;
+  --color-stone: #fbfaf7;      /* cream */
+  --color-stone-2: #f1f5f2;
+  --color-forest: #126342;     /* IFAFA green */
+  --color-forest-2: #0c4d32;
+  --color-mint: #e3f0e8;
+  --color-sage: #edf5ef;
+  --color-navy: #14233c;
   --color-gold: #a8741a;
   --color-gold-soft: #f8eedb;
 
@@ -34,16 +36,16 @@ body { @apply bg-stone text-ink font-sans antialiased; }
 :focus-visible { outline: 3px solid var(--color-gold); outline-offset: 2px; border-radius: 4px; }
 
 @utility container-page { @apply mx-auto w-full max-w-6xl px-5 sm:px-8; }
-@utility btn { @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-full px-5 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50; }
+@utility btn { @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-[10px] px-5 text-sm font-bold transition-colors disabled:cursor-not-allowed disabled:opacity-50; }
 @utility btn-primary { @apply btn bg-forest text-white hover:bg-forest-2; }
-@utility btn-secondary { @apply btn border border-line bg-white text-ink hover:border-forest hover:text-forest; }
+@utility btn-secondary { @apply btn border border-[#bad2c5] bg-white text-forest hover:border-forest; }
 @utility btn-ghost { @apply btn text-forest hover:bg-mint; }
 @utility btn-danger { @apply btn border border-red-200 bg-white text-red-800 hover:bg-red-50; }
 @utility field-label { @apply mb-1.5 block text-sm font-semibold text-ink; }
 @utility field-hint { @apply mt-1 block text-xs text-muted; }
 @utility field { @apply block min-h-11 w-full rounded-xl border border-line bg-white px-3.5 py-2.5 text-base text-ink focus:border-forest focus:outline-none focus:ring-2 focus:ring-forest/20; }
-@utility card { @apply rounded-2xl border border-line bg-white; }
-@utility eyebrow { @apply text-xs font-semibold uppercase tracking-[0.14em] text-forest; }
+@utility card { @apply rounded-[18px] border border-line bg-white shadow-[0_5px_24px_#152e2b08]; }
+@utility eyebrow { @apply text-xs font-extrabold uppercase tracking-[0.12em] text-[#286b58]; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }

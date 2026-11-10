@@ -37,6 +37,7 @@ Other commands:
 1. Create a project at https://supabase.com (an EU region such as Ireland/`eu-west-1` is a sensible choice).
 2. Open **SQL Editor**, paste the whole of `supabase/migrations/20261110000000_init.sql`, and run it. This creates the tables, constraints and row-level security policies.
    Then run `supabase/migrations/20261110010000_monitoring.sql` (watched sources and the suggestions inbox; it also adds the eight official Irish pages the prototype watches).
+   Then run `supabase/migrations/20261110020000_pathways_and_resources.sql` (the “can it be done from outside Ireland?” field, and the table behind the Events, Career support and Practical resources pages).
 3. *Optional:* run `supabase/seed.sql` to load five fictional example listings. Remove them before launch:
    ```sql
    delete from public.opportunities where is_example;
@@ -113,6 +114,19 @@ All dates use Irish time.
 
 ---
 
+### Career pathways (homepage)
+The three homepage cards apply fixed rules (`PATHS` in `src/lib/filters.ts`) to fields volunteers have checked:
+- **I’m living overseas:** only listings marked **“Can be done from outside Ireland”**. “Remote” alone does not count, so until volunteers confirm this for a listing, the path says so honestly and offers remote listings with a warning.
+- **I’m preparing to return:** returnships and career re-entry programmes.
+- **I’m restarting my career:** listings designed for or welcoming career breaks, plus training, mentoring and re-entry programmes.
+Each also filters Events, Career support and Practical resources by the **“Most useful for”** ticks on each item (none ticked = useful to everyone).
+
+### Events, career support and practical resources
+Managed under **Events & resources** in the volunteer area. The same rules apply as for listings: official link required, drafts until published, “last checked” date, and an event date is stored only when **“I confirmed the date on the organiser’s page”** is ticked. There is no sample content: the public pages say “Nothing listed yet” until volunteers add items.
+
+### Contact buttons
+“Get updates” (header) and “Suggest a resource” (homepage) appear only when `NEXT_PUBLIC_CONTACT_EMAIL` is set in Vercel, e.g. to IFAFA’s shared inbox. They open the visitor’s email app; nothing is stored by the hub.
+
 ### Keeping listings current with little effort
 The aim is that a volunteer spends minutes a week, not hours. The **Overview** page estimates the time from what is waiting.
 
@@ -166,7 +180,9 @@ psql ifafa_test -f supabase/migrations/20261110000000_init.sql
 psql ifafa_test -f supabase/seed.sql
 psql ifafa_test -f supabase/migrations/20261110010000_monitoring.sql
 psql ifafa_test -f supabase/tests/rls_test.sql
+psql ifafa_test -f supabase/migrations/20261110020000_pathways_and_resources.sql
 psql ifafa_test -f supabase/tests/rls_monitoring_test.sql
+psql ifafa_test -f supabase/tests/rls_resources_test.sql
 ```
 Lines marked *should fail* must print a permission or policy error.
 

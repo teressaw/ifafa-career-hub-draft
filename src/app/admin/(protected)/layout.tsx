@@ -7,6 +7,7 @@ export const dynamic = 'force-dynamic';
 const NAV = [
   { href: '/admin', label: 'Overview' },
   { href: '/admin/listings', label: 'Listings' },
+  { href: '/admin/resources', label: 'Events & resources' },
   { href: '/admin/sources', label: 'Watched sources' },
   { href: '/admin/inbox', label: 'Inbox' },
   { href: '/admin/import', label: 'Import from a link' },

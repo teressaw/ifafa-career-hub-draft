@@ -1,4 +1,4 @@
-import { CAREER_BREAK, PROGRAMME_TYPES, RECORDED_STATUSES, REGIONS, SECTORS, WORK_ARRANGEMENTS } from './types';
+import { ABROAD, CAREER_BREAK, PROGRAMME_TYPES, RECORDED_STATUSES, REGIONS, SECTORS, WORK_ARRANGEMENTS } from './types';
 import { todayInIreland } from './status';
 
 export type FieldErrors = Partial<Record<string, string>>;
@@ -6,7 +6,7 @@ export type FieldErrors = Partial<Record<string, string>>;
 export interface OpportunityInput {
   employer: string; programme_name: string; summary: string; description: string;
   eligibility: string | null; duration: string | null; compensation: string | null;
-  location: string; region: string; work_arrangement: string; programme_type: string; career_break: string; sector: string;
+  location: string; region: string; work_arrangement: string; programme_type: string; career_break: string; abroad_eligibility: string; sector: string;
   opens_on: string | null; closes_on: string | null; dates_verified: boolean; recorded_status: string | null;
   application_url: string | null; source_url: string; is_example: boolean;
   verified_today: boolean;
@@ -30,7 +30,7 @@ export function validateOpportunity(fd: FormData): { data: OpportunityInput | nu
     employer: str(fd, 'employer'), programme_name: str(fd, 'programme_name'), summary: str(fd, 'summary'), description: str(fd, 'description'),
     eligibility: opt(fd, 'eligibility'), duration: opt(fd, 'duration'), compensation: opt(fd, 'compensation'),
     location: str(fd, 'location'), region: str(fd, 'region'), work_arrangement: str(fd, 'work_arrangement'),
-    programme_type: str(fd, 'programme_type'), career_break: str(fd, 'career_break'), sector: str(fd, 'sector'),
+    programme_type: str(fd, 'programme_type'), career_break: str(fd, 'career_break'), abroad_eligibility: str(fd, 'abroad_eligibility') || 'not-stated', sector: str(fd, 'sector'),
     opens_on: opt(fd, 'opens_on'), closes_on: opt(fd, 'closes_on'), dates_verified: bool(fd, 'dates_verified'), recorded_status: opt(fd, 'recorded_status'),
     application_url: opt(fd, 'application_url'), source_url: str(fd, 'source_url'), is_example: bool(fd, 'is_example'), verified_today: bool(fd, 'verified_today'),
   };
@@ -46,7 +46,7 @@ export function validateOpportunity(fd: FormData): { data: OpportunityInput | nu
   len('location', 'Location', 2, 120);
   const inSet = (k: keyof OpportunityInput, set: object, label: string) => { if (!((d[k] as string) in set)) e[k] = `Choose a ${label}.`; };
   inSet('region', REGIONS, 'region'); inSet('work_arrangement', WORK_ARRANGEMENTS, 'working arrangement'); inSet('programme_type', PROGRAMME_TYPES, 'programme type');
-  inSet('career_break', CAREER_BREAK, 'career-break option'); inSet('sector', SECTORS, 'sector');
+  inSet('career_break', CAREER_BREAK, 'career-break option'); inSet('abroad_eligibility', ABROAD, 'option for working from outside Ireland'); inSet('sector', SECTORS, 'sector');
   if (d.recorded_status && !(d.recorded_status in RECORDED_STATUSES)) e.recorded_status = 'Choose a valid status.';
 
   if (!d.source_url) e.source_url = 'Add the official page where you found this opportunity.';

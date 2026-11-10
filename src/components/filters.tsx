@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { FILTERS, SORTS, activeFilterCount, queryHref, type FilterKey, type Query } from '@/lib/filters';
+import { FILTERS, PATHS, SORTS, activeFilterCount, queryHref, type FilterKey, type Query } from '@/lib/filters';
 import { AutoSubmit } from './auto-submit';
 
 function Select({ name, label, options, value }: { name: string; label: string; options: Record<string, string>; value: string }) {
@@ -23,13 +23,14 @@ export function FilterForm({ q }: { q: Query }) {
       <Select name="sort" label="Sort by" options={SORTS} value={q.sort === 'relevance' ? '' : q.sort} />
       <div className="flex flex-wrap gap-2 pt-1">
         <button type="submit" className="btn-primary flex-1">Show results</button>
-        {count > 0 && <Link href={queryHref(q, { sector: '', region: '', arrangement: '', type: '', careerBreak: '', status: '' })} className="btn-secondary">Clear filters</Link>}
+        {count > 0 && <Link href={queryHref(q, { sector: '', region: '', arrangement: '', type: '', careerBreak: '', abroad: '', status: '' })} className="btn-secondary">Clear filters</Link>}
       </div>
     </div>
   );
   return (
     <form action="/opportunities" method="get" role="search" aria-label="Search and filter opportunities" id="filters">
       <AutoSubmit />
+      {q.path && <input type="hidden" name="path" value={q.path} />}
       <label htmlFor="q" className="sr-only">Search opportunities</label>
       <div className="relative">
         <span aria-hidden="true" className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted">⌕</span>
@@ -47,9 +48,10 @@ export function FilterForm({ q }: { q: Query }) {
 
 export function ActiveFilters({ q }: { q: Query }) {
   const chips = (Object.keys(FILTERS) as FilterKey[]).filter(k => q[k]).map(k => ({ k, text: (FILTERS[k].options as Record<string, string>)[q[k]] }));
-  if (!chips.length && !q.q) return null;
+  if (!chips.length && !q.q && !q.path) return null;
   return (
     <ul className="flex flex-wrap gap-2" aria-label="Active filters">
+      {q.path && <li><Link href={queryHref(q, { path: '' })} className="inline-flex min-h-9 items-center gap-1.5 rounded-full border border-forest bg-forest px-3 text-sm font-medium text-white hover:bg-forest-2">{PATHS[q.path].label} <span aria-hidden="true">×</span><span className="sr-only">Remove this path</span></Link></li>}
       {q.q && <li><Link href={queryHref(q, { q: '' })} className="inline-flex min-h-9 items-center gap-1.5 rounded-full border border-forest/30 bg-mint px-3 text-sm font-medium text-forest hover:bg-white">“{q.q}” <span aria-hidden="true">×</span><span className="sr-only">Remove search</span></Link></li>}
       {chips.map(c => (
         <li key={c.k}><Link href={queryHref(q, { [c.k]: '' })} className="inline-flex min-h-9 items-center gap-1.5 rounded-full border border-forest/30 bg-mint px-3 text-sm font-medium text-forest hover:bg-white">{c.text} <span aria-hidden="true">×</span><span className="sr-only">Remove filter</span></Link></li>
