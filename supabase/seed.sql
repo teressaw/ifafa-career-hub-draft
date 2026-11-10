@@ -1,0 +1,42 @@
+-- OPTIONAL: fictional example listings, clearly marked (is_example = true, "(example)" in the employer name,
+-- and example.org links). Load them to see the directory working; delete them before launch with:
+--   delete from public.opportunities where is_example;
+-- Dates are relative to the day you run this file.
+insert into public.opportunities
+  (slug, employer, programme_name, summary, description, eligibility, duration, compensation, location, region, work_arrangement,
+   programme_type, career_break, sector, opens_on, closes_on, dates_verified, recorded_status, application_url, source_url,
+   last_verified_on, publication, is_example)
+values
+  ('example-harbour-analytics-returnship', 'Harbour Analytics (example)', 'Data & Technology Returnship',
+   'A paid, structured return to work in data and software roles for professionals who have taken a career break.',
+   E'This fictional programme illustrates how a returnship listing appears in the directory.\n\nParticipants join a project team, with a dedicated mentor and a weekly learning session.',
+   'At least three years of previous professional experience in a technical or analytical role, and a career break of 18 months or more.',
+   '16 weeks', 'Salaried, in line with the level of the role (example)', 'Dublin 2', 'dublin', 'hybrid', 'returnship', 'designed-for-returners', 'technology',
+   current_date - 10, current_date + 24, true, null, 'https://example.org/harbour-analytics/returnship/apply', 'https://example.org/harbour-analytics/returnship',
+   current_date - 3, 'published', true),
+  ('example-liffey-legal-return-to-law', 'Liffey Legal Partners (example)', 'Return to Law Programme',
+   'A re-entry programme for qualified solicitors and legal professionals returning after time away from practice.',
+   'A fictional example of an upcoming programme with verified dates.',
+   'Qualified solicitors or barristers, or equivalent qualification from another jurisdiction.',
+   '6 months', null, 'Dublin and Cork', 'multiple', 'hybrid', 'reentry', 'designed-for-returners', 'legal',
+   current_date + 21, current_date + 60, true, null, 'https://example.org/liffey-legal/return-to-law', 'https://example.org/liffey-legal/careers',
+   current_date - 6, 'published', true),
+  ('example-shannon-health-research-fellowship', 'Shannon Health Research (example)', 'Research Return Fellowship',
+   'A fellowship supporting researchers in the life sciences to return to active research after a career break.',
+   'A fictional example of a closed programme.', 'A PhD in a relevant discipline and a career break of at least one year.',
+   '12 months', null, 'Limerick', 'limerick', 'onsite', 'training', 'designed-for-returners', 'health',
+   current_date - 90, current_date - 30, true, null, null, 'https://example.org/shannon-health/fellowship',
+   current_date - 14, 'published', true),
+  ('example-corrib-engineering-flexible-roles', 'Corrib Engineering (example)', 'Flexible Engineering Roles',
+   'Part-time and job-share roles in project engineering, open to applicants with interrupted careers.',
+   'A fictional example of a listing with rolling applications and no published closing date.',
+   'Chartered or working towards chartered status. Career breaks are explicitly welcomed.',
+   'Permanent', null, 'Galway', 'galway', 'hybrid', 'flexible-role', 'breaks-welcome', 'engineering',
+   null, null, false, 'open', 'https://example.org/corrib-engineering/flexible', 'https://example.org/corrib-engineering/careers',
+   current_date - 20, 'published', true),
+  ('example-atlantic-policy-institute-mentoring', 'Atlantic Policy Institute (example)', 'Policy Careers Mentoring Circle',
+   'Small-group mentoring for professionals moving into public policy and international affairs roles.',
+   'A fictional example of a listing that has not yet been verified, so its status is shown as unverified.',
+   null, null, null, 'Online, Ireland-based', 'anywhere-ireland', 'remote', 'mentoring', 'not-specified', 'public-sector',
+   null, null, false, null, null, 'https://example.org/atlantic-policy/mentoring',
+   null, 'published', true);
