@@ -2,11 +2,11 @@ import { ABROAD, APPLICATION_STATUSES, CAREER_BREAK, PROGRAMME_TYPES, REGIONS, S
 import { applicationStatus, todayInIreland } from './status';
 
 export const FILTERS = {
-  sector: { label: 'Career sector', options: SECTORS },
+  sector: { label: 'Sector', options: SECTORS },
   region: { label: 'Location', options: REGIONS },
   arrangement: { label: 'Working arrangement', options: WORK_ARRANGEMENTS },
-  type: { label: 'Programme type', options: PROGRAMME_TYPES },
-  careerBreak: { label: 'Career-break eligibility', options: CAREER_BREAK },
+  type: { label: 'Kind of opportunity', options: PROGRAMME_TYPES },
+  careerBreak: { label: 'Stance on time away', options: CAREER_BREAK },
   abroad: { label: 'Working from outside Ireland', options: ABROAD },
   status: { label: 'Application status', options: APPLICATION_STATUSES },
 } as const;
@@ -17,23 +17,23 @@ export type FilterKey = keyof typeof FILTERS;
  * never a guess. The wording matches the pathway cards.
  */
 export const PATHS = {
-  abroad: {
-    label: 'I’m living overseas',
-    title: 'Working while abroad',
-    explains: 'Showing listings confirmed as possible from outside Ireland. “Remote” alone is not enough, so remote roles without that confirmation are not included.',
-    match: (o: Opportunity) => o.abroad_eligibility === 'yes',
-  },
   return: {
-    label: 'I’m preparing to return',
-    title: 'Preparing to return to Ireland',
-    explains: 'Showing returnships and career re-entry programmes in Ireland.',
+    label: 'Structured programmes',
+    title: 'Returnships and re-entry programmes',
+    explains: 'Showing formal returnships and re-entry programmes: fixed-length, supported routes back into paid work.',
     match: (o: Opportunity) => o.programme_type === 'returnship' || o.programme_type === 'reentry',
   },
   restart: {
-    label: 'I’m restarting my career',
-    title: 'Restarting your career',
-    explains: 'Showing programmes designed for, or open to, people returning after a career break, plus training and mentoring.',
+    label: 'Returner-friendly roles and support',
+    title: 'Returner-friendly roles, training and mentoring',
+    explains: 'Showing roles whose employers say time away is welcome, plus training, mentoring and re-entry programmes.',
     match: (o: Opportunity) => o.career_break !== 'not-specified' || ['training', 'mentoring', 'reentry'].includes(o.programme_type),
+  },
+  abroad: {
+    label: 'Possible from outside Ireland',
+    title: 'Possible from outside Ireland',
+    explains: 'Showing listings confirmed as possible from outside Ireland. “Remote” alone is not enough, so remote roles without that confirmation are not included.',
+    match: (o: Opportunity) => o.abroad_eligibility === 'yes',
   },
 } as const;
 export type PathKey = keyof typeof PATHS;

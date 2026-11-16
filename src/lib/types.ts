@@ -37,16 +37,16 @@ export const WORK_ARRANGEMENTS = {
 
 export const PROGRAMME_TYPES = {
   returnship: 'Returnship',
-  reentry: 'Career re-entry programme',
-  'flexible-role': 'Flexible or part-time role',
+  reentry: 'Re-entry programme',
+  'flexible-role': 'Returner-friendly flexible role',
   training: 'Upskilling and training',
   mentoring: 'Mentoring programme',
-  job: 'Employment opportunity',
+  job: 'Returner-friendly role',
 } as const;
 
 export const CAREER_BREAK = {
-  'designed-for-returners': 'Designed for people returning after a career break',
-  'breaks-welcome': 'Career breaks explicitly welcomed',
+  'designed-for-returners': 'Designed for people returning to paid work',
+  'breaks-welcome': 'Time away from paid work explicitly welcomed',
   'not-specified': 'Not specified by the employer',
 } as const;
 

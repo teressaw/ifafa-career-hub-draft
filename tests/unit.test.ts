@@ -152,3 +152,54 @@ test('resources: no audiences means relevant to every path', () => {
   assert.equal(forPath({ audiences: ['return'] }, 'abroad'), false);
   assert.equal(forPath({ audiences: ['return'] }, ''), true);
 });
+
+// ---------------------------------------------------------------- Employer pathway builder
+import { buildPlan, planToText, sanitiseInput, monthLabel, DEFAULT_INPUT, CAVEAT } from '../src/lib/pathway';
+
+test('pathway: default answers give a complete plan with a caveat and no legal assurance', () => {
+  const p = buildPlan(DEFAULT_INPUT);
+  assert.equal(p.sections.length, 8);
+  assert.ok(p.sections.every(s => s.points.length >= 3));
+  assert.equal(p.caveat, CAVEAT);
+  const text = planToText(p);
+  assert.match(text, /not legal or HR advice/);
+  assert.doesNotMatch(text, /compliant|guarantee|legally sound/i);
+});
+test('pathway: risky choices are flagged, sound ones are not', () => {
+  const titles = (i: object) => buildPlan({ ...DEFAULT_INPUT, sponsor: true, ...i }).reconsider.map(r => r.title);
+  assert.deepEqual(titles({}), []);
+  assert.ok(titles({ pay: 'reduced' }).includes('Paying below the rate for the role'));
+  assert.ok(titles({ pay: 'undecided' }).includes('Pay is not decided'));
+  assert.ok(titles({ vacancy: 'none' }).includes('No role waiting at the end'));
+  assert.ok(titles({ reasons: 'caring' }).includes('Limiting eligibility to caring'));
+  assert.ok(titles({ hours: 'full' }).includes('Full-time only'));
+  assert.ok(titles({ managerBriefing: false }).includes('No preparation for line managers'));
+  assert.ok(titles({ supports: [] }).includes('No named support'));
+  assert.ok(titles({ length: '12', level: 'senior' }).includes('Twelve weeks is short for senior roles'));
+  assert.ok(buildPlan(DEFAULT_INPUT).reconsider.some(r => r.title === 'No senior sponsor yet'));
+});
+test('pathway: timeline is dated from the start month and spans the programme', () => {
+  const p = buildPlan({ ...DEFAULT_INPUT, start: '2027-03', length: '24' });
+  assert.equal(p.timeline[0].when, 'November 2026');
+  assert.ok(p.timeline.some(t => t.when === 'March 2027' && /First day/.test(t.what)));
+  assert.ok(p.timeline.some(t => /Midpoint/.test(t.what)));
+  assert.equal(p.timeline.at(-2)!.when, 'September 2027');
+  assert.equal(monthLabel('2026-12', 1), 'January 2027');
+  assert.equal(buildPlan(DEFAULT_INPUT).timeline[0].when, '4 months before the start');
+});
+test('pathway: supported hire has no fixed term or midpoint', () => {
+  const p = buildPlan({ ...DEFAULT_INPUT, format: 'supported' });
+  assert.match(p.summary, /permanent from day one/);
+  assert.ok(!p.timeline.some(t => /Midpoint/.test(t.what)));
+  assert.equal(p.listing.find(l => l.label === 'Duration')!.value, 'Permanent');
+});
+test('pathway: untrusted saved data is sanitised', () => {
+  const i = sanitiseInput({ organisation: '  Acme\u0000 ' + 'x'.repeat(200), pay: 'free', goals: ['hiring', 'nonsense', 'hiring'], start: '2027-13', supports: 'buddy', sponsor: 'yes' });
+  assert.equal(i.organisation.length, 80);
+  assert.equal(i.pay, 'rate');
+  assert.deepEqual(i.goals, ['hiring']);
+  assert.equal(i.start, '');
+  assert.deepEqual(i.supports, []);
+  assert.equal(i.sponsor, false);
+  assert.doesNotThrow(() => buildPlan(sanitiseInput(null)));
+});

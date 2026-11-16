@@ -59,21 +59,23 @@ export default async function OpportunityPage({ params }: PageProps<'/opportunit
           <section aria-labelledby="eligibility" className="mt-10">
             <h2 id="eligibility" className="font-serif text-2xl font-semibold">Eligibility</h2>
             <div className="mt-4 text-ink-soft">{o.eligibility ? <Paragraphs text={o.eligibility} /> : <p className="italic text-muted">The employer has not published eligibility criteria that we could verify. Check the official listing.</p>}</div>
-            <p className="mt-3 text-sm"><span className="font-semibold">Career breaks:</span> {CAREER_BREAK[o.career_break]}</p>
+            <p className="mt-3 text-sm"><span className="font-semibold">Time away from paid work:</span> {CAREER_BREAK[o.career_break]}</p>
           </section>
+
+          <p className="mt-6 text-sm"><Link href="/returnships" className="link">Six questions worth asking before you apply</Link></p>
 
           <section aria-labelledby="facts" className="mt-10">
             <h2 id="facts" className="font-serif text-2xl font-semibold">Key details</h2>
             <dl className="card mt-4 px-5">
               <Fact term="Employer" value={o.employer} />
               <Fact term="Programme" value={o.programme_name} />
-              <Fact term="Programme type" value={PROGRAMME_TYPES[o.programme_type]} />
+              <Fact term="Kind of opportunity" value={PROGRAMME_TYPES[o.programme_type]} />
               <Fact term="Sector" value={SECTORS[o.sector]} />
               <Fact term="Location" value={`${o.location} · ${REGIONS[o.region]}`} />
               <Fact term="Working arrangement" value={WORK_ARRANGEMENTS[o.work_arrangement]} />
               <Fact term="From outside Ireland" value={ABROAD[o.abroad_eligibility]} muted={o.abroad_eligibility === 'not-stated'} />
               <Fact term="Duration" value={o.duration ?? NOT_CONFIRMED} muted={!o.duration} />
-              <Fact term="Compensation" value={o.compensation ?? NOT_CONFIRMED} muted={!o.compensation} />
+              <Fact term="Pay" value={o.compensation ?? NOT_CONFIRMED} muted={!o.compensation} />
             </dl>
           </section>
         </article>
@@ -94,7 +96,7 @@ export default async function OpportunityPage({ params }: PageProps<'/opportunit
             </a>
             <div className="border-t border-line pt-5 text-sm">
               <h2 className="font-semibold text-ink">Verification</h2>
-              <p className="mt-2 text-ink-soft">{o.last_verified_on ? <>Last checked by an IFAFA volunteer on <strong className="text-ink">{formatDate(o.last_verified_on)}</strong>.</> : 'Not yet checked by a volunteer.'}</p>
+              <p className="mt-2 text-ink-soft">{o.last_verified_on ? <>Last checked against the source on <strong className="text-ink">{formatDate(o.last_verified_on)}</strong>.</> : 'Not yet checked against the source.'}</p>
               <p className="mt-2 break-words"><span className="font-semibold text-muted">Source: </span><a href={o.source_url} target="_blank" rel="noopener noreferrer" className="text-forest underline underline-offset-2">{o.source_url.replace(/^https?:\/\//, '')}</a></p>
               <p className="mt-3 text-xs text-muted">Always confirm details with the employer before applying.</p>
             </div>

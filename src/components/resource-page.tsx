@@ -6,15 +6,15 @@ import { formatDate, todayInIreland } from '@/lib/status';
 import { EmptyState, Tag } from '@/components/ui';
 
 const INTRO: Record<ResourceKind, { eyebrow: string; title: string; lead: string; none: string }> = {
-  event: { eyebrow: 'Events', title: 'Events', lead: 'Free webinars, career workshops and professional networking opportunities, checked against the organiser’s own page.', none: 'No events are listed yet. Volunteers add events only after confirming them with the organiser.' },
-  support: { eyebrow: 'Career support', title: 'Career support', lead: 'Free or funded coaching, CV support and professional networks.', none: 'No career support services are listed yet. Volunteers add services only after checking the provider’s own page.' },
-  resource: { eyebrow: 'Practical resources', title: 'Practical resources', lead: 'Guidance on career breaks, work eligibility and preparing to return to Ireland, from official sources.', none: 'No resources are listed yet. Volunteers add guides only from official or reputable sources.' },
+  event: { eyebrow: 'Events', title: 'Events', lead: 'Free webinars, career workshops and professional networking opportunities, checked against the organiser’s own page.', none: 'No events are listed yet. Events are added only after they have been confirmed with the organiser.' },
+  support: { eyebrow: 'Career support', title: 'Career support', lead: 'Free or funded coaching, CV support and professional networks.', none: 'No career support services are listed yet. Services are added only after checking the provider’s own page.' },
+  resource: { eyebrow: 'Practical resources', title: 'Practical resources', lead: 'Practical guidance on returning to paid work in Ireland, from official and reputable sources.', none: 'No resources are listed yet. Guides are added only from official or reputable sources.' },
 };
 
 function PathChips({ kind, path }: { kind: ResourceKind; path: PathKey | '' }) {
   const base = RESOURCE_KINDS[kind].href;
   const chip = (href: string, text: string, on: boolean) => (
-    <li key={href}><Link href={href} aria-current={on ? 'page' : undefined} className={`inline-flex min-h-10 items-center rounded-full border px-4 text-sm font-semibold ${on ? 'border-forest bg-forest text-white' : 'border-line bg-white text-ink-soft hover:border-forest hover:text-forest'}`}>{text}</Link></li>
+    <li key={href}><Link href={href} aria-current={on ? 'page' : undefined} className={`inline-flex min-h-10 items-center rounded-full border px-4 text-sm font-semibold ${on ? 'border-forest bg-forest text-white' : 'border-line bg-paper text-ink-soft hover:border-forest hover:text-forest'}`}>{text}</Link></li>
   );
   return (
     <nav aria-label="Filter by your situation"><ul className="flex flex-wrap gap-2">

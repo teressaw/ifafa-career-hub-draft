@@ -14,7 +14,7 @@ export type ResourceKind = keyof typeof RESOURCE_KINDS;
 
 export const COSTS = { free: 'Free', funded: 'Funded or subsidised', paid: 'Paid', 'not-stated': 'Cost not stated' } as const;
 export const FORMATS = { online: 'Online', 'in-person': 'In person', hybrid: 'Online and in person', 'not-stated': 'Format not stated' } as const;
-export const AUDIENCES: Record<PathKey, string> = { abroad: 'Living overseas', return: 'Preparing to return', restart: 'Restarting a career' };
+export const AUDIENCES: Record<PathKey, string> = { return: 'People considering structured programmes', restart: 'People considering roles, training or mentoring', abroad: 'People living outside Ireland' };
 
 export interface Resource {
   id: string;

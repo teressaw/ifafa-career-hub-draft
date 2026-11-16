@@ -1,46 +1,53 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { StatusBadge } from '@/components/ui';
-import { VERIFICATION_MAX_AGE_DAYS } from '@/lib/status';
+import { contactEmail, mailto } from '@/lib/contact';
 
-export const metadata: Metadata = { title: 'How listings work' };
+export const metadata: Metadata = { title: 'About', description: 'What Workbreak is, who runs it, and how listings are checked.' };
 
-export default function AboutPage() {
+export default function About() {
+  const email = contactEmail();
   return (
-    <div className="container-page max-w-3xl py-12 sm:py-16">
-      <p className="eyebrow">About the directory</p>
-      <h1 className="mt-2 font-serif text-4xl font-semibold tracking-tight">How listings work</h1>
-      <p className="mt-5 text-lg leading-relaxed text-ink-soft">
-        IFAFA Career Hub gathers returnships, career re-entry programmes and employment pathways in Ireland that may suit accompanying partners of Irish diplomatic staff — people whose careers have often been shaped, and sometimes interrupted, by overseas postings.
-      </p>
+    <div className="container-page max-w-3xl py-10 sm:py-14">
+      <p className="eyebrow">About</p>
+      <h1 className="mt-2 font-serif text-4xl font-semibold tracking-tight text-olive sm:text-5xl">Life isn’t a career break.</h1>
+      <div className="mt-6 space-y-4 text-lg text-ink-soft">
+        <p>Workbreak helps people in Ireland return to paid work after time away, and helps employers create better ways back.</p>
+        <p>The usual phrase for that time is a “career break”, as if a career were the main event and everything else an interruption. We think it’s the other way round. People spend years caring for someone, raising children, moving country, being ill, recovering, or doing something else entirely. That is life, not a gap in it.</p>
+        <p>Paid work matters too: for income, independence and the plain satisfaction of being good at something. What we object to is the toll charged on the way back in. So Workbreak does two practical things. It lists routes back that exist, checked and honestly described. And it gives employers a tool for building better ones.</p>
+      </div>
 
-      <section className="mt-12 space-y-4">
-        <h2 className="font-serif text-2xl font-semibold">How each listing is checked</h2>
-        <ol className="list-decimal space-y-3 pl-5 leading-relaxed text-ink-soft marker:font-semibold marker:text-forest">
-          <li>A volunteer finds the opportunity on the employer’s or programme’s own website, and records that page as the <strong>source</strong>.</li>
-          <li>They copy only what the source says. Application dates, eligibility criteria and pay are never estimated: if the source doesn’t state them, the listing says <em>not confirmed</em>.</li>
-          <li>Dates are shown only when the volunteer has confirmed them at the source.</li>
-          <li>Each listing shows the date it was <strong>last checked</strong>. Listings not re-checked within {Math.round(VERIFICATION_MAX_AGE_DAYS / 30)} months are automatically shown as unverified.</li>
-          <li>A second look by a volunteer is needed before a listing is published.</li>
-        </ol>
-      </section>
-
-      <section className="mt-12">
-        <h2 className="font-serif text-2xl font-semibold">Application statuses</h2>
-        <dl className="mt-5 space-y-4">
-          <div className="card p-5"><dt><StatusBadge status="open" /></dt><dd className="mt-2 text-ink-soft">Within the verified application window, or confirmed as open (for example, rolling applications) when last checked.</dd></div>
-          <div className="card p-5"><dt><StatusBadge status="upcoming" /></dt><dd className="mt-2 text-ink-soft">A verified opening date is in the future, or the source says applications will open soon. Dates are shown only if confirmed.</dd></div>
-          <div className="card p-5"><dt><StatusBadge status="closed" /></dt><dd className="mt-2 text-ink-soft">The verified closing date has passed, or the source said applications were closed. Closed listings stay visible because many programmes run each year.</dd></div>
-          <div className="card p-5"><dt><StatusBadge status="unverified" /></dt><dd className="mt-2 text-ink-soft">The listing hasn’t been checked recently, or its status couldn’t be confirmed. Treat its details with care and check the source.</dd></div>
+      <section id="listings" aria-labelledby="listings-h" className="mt-14 scroll-mt-28">
+        <h2 id="listings-h" className="font-serif text-2xl font-semibold text-olive sm:text-3xl">How listings are checked</h2>
+        <ul className="mt-4 list-disc space-y-3 pl-5 text-ink-soft marker:text-rust">
+          <li><strong className="text-ink">A person checks every listing</strong> against the employer’s or provider’s own page before it is published. Nothing is published automatically.</li>
+          <li><strong className="text-ink">Every listing links to its source</strong> and shows the date it was last checked.</li>
+          <li><strong className="text-ink">Dates appear only when confirmed</strong> at the source. Otherwise the listing says so.</li>
+          <li><strong className="text-ink">Missing information is shown as missing.</strong> If an employer doesn’t state pay, duration or eligibility, the listing says “Not confirmed”. We don’t guess.</li>
+          <li><strong className="text-ink">Old checks expire.</strong> A listing not re-checked within 120 days is shown as “Status unverified” until someone looks again.</li>
+          <li><strong className="text-ink">Placement isn’t for sale.</strong> Employers cannot pay to be listed or ranked.</li>
+        </ul>
+        <h3 className="mt-8 font-semibold text-ink">What each status means</h3>
+        <dl className="card mt-3 px-5 text-ink-soft">
+          {[['Open now', 'Within confirmed application dates, or recorded as open (for example, rolling applications) at the last check.'],
+            ['Opening soon', 'A confirmed opening date is ahead, or the provider says an intake is expected.'],
+            ['Closed', 'The confirmed closing date has passed. Many programmes run every year.'],
+            ['Status unverified', 'Not checked recently enough for us to say. Go to the source.']].map(([t, d]) => (
+            <div key={t} className="border-b border-line py-3.5 last:border-0 sm:grid sm:grid-cols-[170px_1fr] sm:gap-4"><dt className="font-semibold text-ink">{t}</dt><dd>{d}</dd></div>
+          ))}
         </dl>
+        <p className="mt-4 text-sm text-muted">Details change. Always confirm eligibility, dates and pay with the employer before applying.</p>
       </section>
 
-      <section className="mt-12 space-y-3 leading-relaxed text-ink-soft">
-        <h2 className="font-serif text-2xl font-semibold text-ink">Important</h2>
-        <p>IFAFA does not run these programmes and is not responsible for employers’ decisions. Always confirm details with the employer before applying.</p>
-        <p>Spotted something out of date? Let an IFAFA volunteer know so the listing can be re-checked.</p>
+      <section aria-labelledby="stage-h" className="mt-14">
+        <h2 id="stage-h" className="font-serif text-2xl font-semibold text-olive sm:text-3xl">Where we are</h2>
+        <div className="mt-4 space-y-3 text-ink-soft">
+          <p>Workbreak is an independent project at an early stage. It covers Ireland first. The directory is small and growing, because we add a listing only once it has been checked.</p>
+          <p>We don’t give individual legal, tax or immigration advice, and nothing here is a substitute for it.</p>
+          {email && <p>Spotted something out of date, or know a programme we should list? <a href={mailto(email, 'Workbreak')} className="link">Tell us</a>.</p>}
+        </div>
       </section>
-      <Link href="/opportunities" className="btn-primary mt-10">Browse opportunities</Link>
+
+      <p className="mt-12 flex flex-wrap gap-3"><Link href="/opportunities" className="btn-primary">Find opportunities</Link><Link href="/employers" className="btn-secondary">For employers</Link></p>
     </div>
   );
 }

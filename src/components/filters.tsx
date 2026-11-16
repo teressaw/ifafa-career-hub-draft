@@ -52,9 +52,9 @@ export function ActiveFilters({ q }: { q: Query }) {
   return (
     <ul className="flex flex-wrap gap-2" aria-label="Active filters">
       {q.path && <li><Link href={queryHref(q, { path: '' })} className="inline-flex min-h-9 items-center gap-1.5 rounded-full border border-forest bg-forest px-3 text-sm font-medium text-white hover:bg-forest-2">{PATHS[q.path].label} <span aria-hidden="true">×</span><span className="sr-only">Remove this path</span></Link></li>}
-      {q.q && <li><Link href={queryHref(q, { q: '' })} className="inline-flex min-h-9 items-center gap-1.5 rounded-full border border-forest/30 bg-mint px-3 text-sm font-medium text-forest hover:bg-white">“{q.q}” <span aria-hidden="true">×</span><span className="sr-only">Remove search</span></Link></li>}
+      {q.q && <li><Link href={queryHref(q, { q: '' })} className="inline-flex min-h-9 items-center gap-1.5 rounded-full border border-forest/30 bg-mint px-3 text-sm font-medium text-forest hover:bg-paper">“{q.q}” <span aria-hidden="true">×</span><span className="sr-only">Remove search</span></Link></li>}
       {chips.map(c => (
-        <li key={c.k}><Link href={queryHref(q, { [c.k]: '' })} className="inline-flex min-h-9 items-center gap-1.5 rounded-full border border-forest/30 bg-mint px-3 text-sm font-medium text-forest hover:bg-white">{c.text} <span aria-hidden="true">×</span><span className="sr-only">Remove filter</span></Link></li>
+        <li key={c.k}><Link href={queryHref(q, { [c.k]: '' })} className="inline-flex min-h-9 items-center gap-1.5 rounded-full border border-forest/30 bg-mint px-3 text-sm font-medium text-forest hover:bg-paper">{c.text} <span aria-hidden="true">×</span><span className="sr-only">Remove filter</span></Link></li>
       ))}
     </ul>
   );

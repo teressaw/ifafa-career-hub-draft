@@ -22,7 +22,7 @@ export default async function ProtectedAdminLayout({ children }: { children: Rea
           <p className="container-page py-2.5 text-sm text-ink"><strong>Demo of the volunteer area.</strong> Nothing you do here is saved. Checks of the watched websites are real and happen live.</p>
         </div>
       )}
-      <div className="border-b border-line bg-white">
+      <div className="border-b border-line bg-paper">
         <div className="container-page flex flex-wrap items-center justify-between gap-3 py-3">
           <nav aria-label="Volunteer area" className="-mx-1 flex gap-1 overflow-x-auto">
             {NAV.map(n => <Link key={n.href} href={n.href} className="btn-ghost min-h-10 shrink-0 px-3">{n.label}</Link>)}

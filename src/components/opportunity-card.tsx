@@ -33,12 +33,17 @@ export function OpportunityCard({ o, headingLevel = 'h2' }: { o: Listed; heading
       </H>
       <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-ink-soft">{o.summary}</p>
       <div className="mt-4 flex flex-wrap gap-1.5">
-        <Tag>{PROGRAMME_TYPES[o.programme_type]}</Tag>
+        <span className="inline-flex items-center rounded-full bg-sage-soft px-2.5 py-0.5 text-xs font-semibold text-sage-deep">{PROGRAMME_TYPES[o.programme_type]}</span>
         <Tag>{REGIONS[o.region]}</Tag>
         <Tag>{WORK_ARRANGEMENTS[o.work_arrangement]}</Tag>
       </div>
-      <div className="mt-auto pt-5">
+      <dl className="mt-4 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-sm">
+        <dt className="text-muted">Pay</dt><dd className={o.compensation ? 'text-ink' : 'italic text-muted'}>{o.compensation ?? 'Not confirmed'}</dd>
+        <dt className="text-muted">Length</dt><dd className={o.duration ? 'text-ink' : 'italic text-muted'}>{o.duration ?? 'Not confirmed'}</dd>
+      </dl>
+      <div className="mt-auto pt-4">
         {date ? <p className="text-sm font-semibold text-ink">{date}</p> : <p className="text-sm text-muted">{o.appStatus === 'unverified' ? 'Check the official source for dates' : 'No confirmed dates published'}</p>}
+        <p className="mt-1 text-xs text-muted">{o.last_verified_on ? `Checked ${formatDate(o.last_verified_on)}` : 'Not yet checked'}</p>
       </div>
     </article>
   );

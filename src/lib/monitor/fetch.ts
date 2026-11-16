@@ -10,7 +10,7 @@ import { robotsAllows, robotsRules } from './robots';
  *  - Refuses internal/private network addresses (prevents misuse of the server), non-web URLs and odd ports.
  *  - Caps time (10 s) and size (2.5 MB), and follows at most 4 redirects, re-checking each one.
  */
-export const USER_AGENT = 'IFAFA-CareerHub/1.0 (+https://ifafa-career-hub.vercel.app/about; volunteer-run listing checker)';
+export const USER_AGENT = 'Workbreak/1.0 (+https://workbreak.ie/about; listing freshness checker)';
 const MAX_BYTES = 2_500_000;
 const TIMEOUT_MS = 10_000;
 

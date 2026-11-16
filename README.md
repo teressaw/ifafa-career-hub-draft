@@ -1,12 +1,16 @@
-# IFAFA Career Hub
+# Workbreak
 
-A volunteer-curated directory of returnships, career re-entry programmes and employment pathways in Ireland, for accompanying partners of Irish diplomatic staff.
+**Life isn’t a career break.** An Ireland-first platform that helps people return to paid work after time away, and helps employers build better ways back.
 
-- **Public directory** with search and six filters (sector, location, working arrangement, programme type, career-break eligibility, application status), plus a detailed page for each opportunity.
-- **Volunteer admin area** where authorised volunteers add, edit, verify, publish and archive listings.
-- **Accuracy rules built in**: dates are only shown when a volunteer confirmed them at the source; unknown eligibility, duration and pay show as *Not confirmed*; listings not re-checked within 120 days are automatically shown as *Status unverified*.
+- **Opportunity directory** with search and filters, a page per listing, and strict accuracy rules: dates only when confirmed at the source, “Not confirmed” for anything the employer hasn’t stated, and “Status unverified” for anything not re-checked in 120 days.
+- **Employer pathway builder** (`/employers/pathway-builder`): seven steps that produce a practical starting plan. Rule-based, runs in the browser, stores nothing on the server.
+- **Team area** (`/admin`) for adding, checking and publishing listings, with a source monitor that suggests drafts and never publishes on its own.
 
-Built with Next.js 16 (App Router), TypeScript, Tailwind CSS 4 and Supabase. Runtime dependencies are limited to Next.js, React and the two official Supabase packages.
+Built with Next.js 16, TypeScript, Tailwind CSS 4 and Supabase. Fonts are self-hosted (Newsreader, Source Sans 3). No analytics, no AI services, no paid dependencies.
+
+Day-to-day guide, design specification, feature inventory and backlog: **[docs/WORKBREAK.md](docs/WORKBREAK.md)**.
+
+> History: this codebase began as the IFAFA Career Hub pilot. Workbreak is an independent project. The database schema, team workflow and source monitor are unchanged from that pilot; the sections below still apply, reading “team member” for “volunteer”.
 
 ---
 
@@ -19,7 +23,7 @@ npm install
 npm run dev
 ```
 
-Open http://localhost:3000. **With no Supabase settings, the directory shows eight fictional example listings** (all clearly labelled, using example.org links). This is stage one: search, filters and detail pages all work.
+Open http://localhost:3000. **With no Supabase settings, local and preview copies show eight fictional example listings** (clearly labelled, example.org links). The production site never shows them: with no database it shows an honest “checking our first listings” state.
 
 Other commands:
 
@@ -125,7 +129,7 @@ Each also filters Events, Career support and Practical resources by the **“Mos
 Managed under **Events & resources** in the volunteer area. The same rules apply as for listings: official link required, drafts until published, “last checked” date, and an event date is stored only when **“I confirmed the date on the organiser’s page”** is ticked. There is no sample content: the public pages say “Nothing listed yet” until volunteers add items.
 
 ### Contact buttons
-“Get updates” (header) and “Suggest a resource” (homepage) appear only when `NEXT_PUBLIC_CONTACT_EMAIL` is set in Vercel, e.g. to IFAFA’s shared inbox. They open the visitor’s email app; nothing is stored by the hub.
+“Get updates” (header) and “Suggest a resource” (homepage) appear only when `NEXT_PUBLIC_CONTACT_EMAIL` is set in Vercel, e.g. to your shared inbox. They open the visitor’s email app; nothing is stored by the hub.
 
 ### Keeping listings current with little effort
 The aim is that a volunteer spends minutes a week, not hours. The **Overview** page estimates the time from what is waiting.
@@ -134,7 +138,7 @@ The aim is that a volunteer spends minutes a week, not hours. The **Overview** p
 - Where a page publishes structured job data (schema.org `JobPosting`), the hub turns it into a **suggestion** in the **Inbox**. **Review and create draft** opens the normal form pre-filled. Each pre-filled field says where it came from (for example `JobPosting.validThrough`). Fields the page doesn’t state are left empty.
 - **Import from a link** does the same for any single page a volunteer has found.
 - **Nothing is published automatically.** Suggested dates still need the “I confirmed these dates” tick. Sentences that mention dates are shown as hints only and never filled in.
-- **Politeness:** the checker identifies itself as `IFAFA-CareerHub` and obeys each site’s robots.txt. It checks one page at a time, stops after 10 seconds or 2.5 MB, and refuses private network addresses. It never logs in or submits forms.
+- **Politeness:** the checker identifies itself as `Workbreak` and obeys each site’s robots.txt. It checks one page at a time, stops after 10 seconds or 2.5 MB, and refuses private network addresses. It never logs in or submits forms.
 
 ### Demo mode
 Without Supabase settings the volunteer area opens as a read-only demo. It uses the example listings and the real watched sources. **Check now** and **Import from a link** fetch the real pages live, but nothing is saved. Once you add the Supabase variables, sign-in is required and demo mode switches off automatically.
@@ -168,21 +172,21 @@ Without Supabase settings the volunteer area opens as a read-only demo. It uses 
 - [ ] Supabase → **Advisors → Security** shows no warnings for this project.
 - [ ] Volunteers use strong passwords. Consider enabling multi-factor authentication (Authentication → MFA) for admins.
 - [ ] Example listings removed (`delete … where is_example;`).
-- [ ] A privacy notice for volunteers’ accounts, and a contact route for reporting outdated listings, agreed with IFAFA.
+- [ ] A privacy notice for volunteers’ accounts, and a contact route for reporting outdated listings, agreed.
 - [ ] Someone independent runs through the RLS tests (`supabase/tests/`) against a staging project.
 
 ### Testing RLS yourself
 `supabase/tests/supabase_stub.sql` recreates Supabase’s roles on a plain PostgreSQL database, so you can run:
 ```bash
-createdb ifafa_test
-psql ifafa_test -f supabase/tests/supabase_stub.sql
-psql ifafa_test -f supabase/migrations/20261110000000_init.sql
-psql ifafa_test -f supabase/seed.sql
-psql ifafa_test -f supabase/migrations/20261110010000_monitoring.sql
-psql ifafa_test -f supabase/tests/rls_test.sql
-psql ifafa_test -f supabase/migrations/20261110020000_pathways_and_resources.sql
-psql ifafa_test -f supabase/tests/rls_monitoring_test.sql
-psql ifafa_test -f supabase/tests/rls_resources_test.sql
+createdb workbreak_test
+psql workbreak_test -f supabase/tests/supabase_stub.sql
+psql workbreak_test -f supabase/migrations/20261110000000_init.sql
+psql workbreak_test -f supabase/seed.sql
+psql workbreak_test -f supabase/migrations/20261110010000_monitoring.sql
+psql workbreak_test -f supabase/tests/rls_test.sql
+psql workbreak_test -f supabase/migrations/20261110020000_pathways_and_resources.sql
+psql workbreak_test -f supabase/tests/rls_monitoring_test.sql
+psql workbreak_test -f supabase/tests/rls_resources_test.sql
 ```
 Lines marked *should fail* must print a permission or policy error.
 

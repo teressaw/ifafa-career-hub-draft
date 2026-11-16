@@ -14,7 +14,7 @@ export default async function SourcesPage() {
       <p className="mt-2 max-w-2xl text-ink-soft">Official pages the hub keeps an eye on. When one changes, it is flagged here with a summary of what changed, so a volunteer only opens the pages that need attention.</p>
       <details className="mt-4 max-w-2xl text-sm text-muted">
         <summary className="inline-flex min-h-10 cursor-pointer items-center font-semibold text-forest">How the hub checks pages politely</summary>
-        <p className="mt-1 leading-relaxed">It identifies itself as “IFAFA-CareerHub”, reads each site’s robots.txt rules and skips pages the site asks automated tools not to read, checks one page at a time, and stores only the text it needs to spot changes. It never logs in or fills in forms.</p>
+        <p className="mt-1 leading-relaxed">It identifies itself as “Workbreak”, reads each site’s robots.txt rules and skips pages the site asks automated tools not to read, checks one page at a time, and stores only the text it needs to spot changes. It never logs in or fills in forms.</p>
       </details>
       <div className="mt-8"><SourcesBoard sources={sources} live={ctx.mode === 'live'} /></div>
       <div className="mt-10 max-w-3xl"><AddSourceForm /></div>

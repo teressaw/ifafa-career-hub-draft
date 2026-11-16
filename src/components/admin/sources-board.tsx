@@ -40,7 +40,7 @@ function SourceRow({ src, live, result, onCheck, checking }: { src: Source; live
         <p role="status" className={`mt-3 rounded-xl px-4 py-2.5 text-sm ${status === 'error' ? 'bg-red-50 text-red-800' : status === 'blocked' ? 'bg-closed-bg text-ink' : 'bg-stone text-ink-soft'}`}>{result?.message ?? src.last_error}</p>
       )}
       {change && (change.added.length > 0 || change.removed.length > 0 || change.dateHints.length > 0) && (
-        <details className="mt-3 rounded-xl border border-line bg-white" open={status === 'changed'}>
+        <details className="mt-3 rounded-xl border border-line bg-paper" open={status === 'changed'}>
           <summary className="flex min-h-11 cursor-pointer items-center px-4 text-sm font-semibold">What’s on the page{status === 'changed' ? ' — what changed' : ''}</summary>
           <div className="space-y-3 border-t border-line px-4 py-3 text-sm">
             {change.dateHints.length > 0 && <div><p className="font-semibold text-ink">Sentences mentioning dates <span className="font-normal text-muted">(hints only — confirm on the page)</span></p><ul className="mt-1 list-disc space-y-1 pl-5 text-ink-soft">{change.dateHints.map((h, i) => <li key={i}>“{h}”</li>)}</ul></div>}

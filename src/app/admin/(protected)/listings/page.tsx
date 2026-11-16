@@ -36,8 +36,8 @@ export default async function AdminListings({ searchParams }: PageProps<'/admin/
         <nav aria-label="Filter listings" className="-mx-1 flex gap-1 overflow-x-auto pb-1">
           {(Object.keys(VIEWS) as View[]).map(v => (
             <Link key={v} href={`/admin/listings?view=${v}`} aria-current={v === view ? 'page' : undefined}
-              className={`inline-flex min-h-10 shrink-0 items-center gap-2 rounded-full px-4 text-sm font-semibold ${v === view ? 'bg-forest text-white' : 'bg-white text-ink-soft ring-1 ring-line hover:text-forest'}`}>
-              {VIEWS[v]} <span className={`rounded-full px-1.5 text-xs ${v === view ? 'bg-white/20' : 'bg-stone-2'}`}>{counts[v]}</span>
+              className={`inline-flex min-h-10 shrink-0 items-center gap-2 rounded-full px-4 text-sm font-semibold ${v === view ? 'bg-forest text-white' : 'bg-paper text-ink-soft ring-1 ring-line hover:text-forest'}`}>
+              {VIEWS[v]} <span className={`rounded-full px-1.5 text-xs ${v === view ? 'bg-paper/20' : 'bg-stone-2'}`}>{counts[v]}</span>
             </Link>
           ))}
         </nav>

@@ -1,33 +1,56 @@
 @import "tailwindcss";
 
-/* IFAFA Career Hub — design tokens (from the 2026 homepage redesign).
-   Navy text, IFAFA green, warm cream background. All text colours meet WCAG AA on their backgrounds. */
+/* Workbreak design tokens.
+   Palette sampled from the approved artwork and harmonised; every text colour meets WCAG AA (4.5:1)
+   on cream and paper. Mustard, rust, dusty blue and sage are decorative at full strength; use the
+   "-deep" variants for text. Older token names (forest, stone, mint…) are kept as aliases so the
+   team area keeps working unchanged. */
 @theme {
-  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-serif: Georgia, "Iowan Old Style", "Palatino Linotype", Palatino, serif;
+  --font-sans: "Source Sans 3 Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  --font-serif: "Newsreader Variable", "Iowan Old Style", Georgia, serif;
 
-  --color-ink: #14233c;        /* navy */
-  --color-ink-soft: #41536b;
-  --color-muted: #566579;
-  --color-line: #e5e9e7;
-  --color-stone: #fbfaf7;      /* cream */
-  --color-stone-2: #f1f5f2;
-  --color-forest: #126342;     /* IFAFA green */
-  --color-forest-2: #0c4d32;
-  --color-mint: #e3f0e8;
-  --color-sage: #edf5ef;
-  --color-navy: #14233c;
-  --color-gold: #a8741a;
-  --color-gold-soft: #f8eedb;
+  /* Brand */
+  --color-cream: #f6f0e7;        /* page */
+  --color-paper: #fffcf7;        /* raised surfaces */
+  --color-olive: #3a4626;        /* wordmark, primary actions — 8.9:1 on cream */
+  --color-olive-2: #2c361c;
+  --color-rust: #a65b47;         /* decorative, large text only (4.4:1) */
+  --color-rust-deep: #8e4431;    /* text accents — 6.1:1 */
+  --color-mustard: #d5a03c;      /* decorative only */
+  --color-mustard-deep: #8a5f12; /* text — 5.0:1 */
+  --color-mustard-soft: #f6e7c4;
+  --color-blue: #778aa0;         /* decorative only */
+  --color-blue-deep: #4c5e74;    /* text — 5.9:1 */
+  --color-blue-soft: #e4e9ef;
+  --color-sage: #8e9a72;         /* decorative only */
+  --color-sage-deep: #55613e;    /* text — 5.9:1 */
+  --color-sage-soft: #e8eadb;
 
-  --color-open: #116a48;
-  --color-open-bg: #e2f4ea;
-  --color-upcoming: #1f4f9a;
-  --color-upcoming-bg: #e5edfa;
-  --color-closed: #4f5753;
-  --color-closed-bg: #eceeec;
-  --color-unverified: #8a4b00;
-  --color-unverified-bg: #fdf0db;
+  /* Text and lines */
+  --color-ink: #26291c;          /* 13:1 */
+  --color-ink-soft: #46493a;
+  --color-muted: #5f5c4c;        /* 5.9:1 */
+  --color-line: #e3d9c9;
+
+  /* Aliases used across existing components */
+  --color-stone: #f6f0e7;
+  --color-stone-2: #efe7da;
+  --color-forest: #3a4626;
+  --color-forest-2: #2c361c;
+  --color-mint: #e8eadb;
+  --color-navy: #2c361c;
+  --color-gold: #8e4431;          /* focus ring: deep rust */
+  --color-gold-soft: #f6e7c4;
+
+  /* Application status */
+  --color-open: #55613e;
+  --color-open-bg: #e8eadb;
+  --color-upcoming: #4c5e74;
+  --color-upcoming-bg: #e4e9ef;
+  --color-closed: #5f5c4c;
+  --color-closed-bg: #ece6dc;
+  --color-unverified: #8a5f12;
+  --color-unverified-bg: #f6e7c4;
 }
 
 html { -webkit-text-size-adjust: 100%; }
@@ -36,16 +59,16 @@ body { @apply bg-stone text-ink font-sans antialiased; }
 :focus-visible { outline: 3px solid var(--color-gold); outline-offset: 2px; border-radius: 4px; }
 
 @utility container-page { @apply mx-auto w-full max-w-6xl px-5 sm:px-8; }
-@utility btn { @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-[10px] px-5 text-sm font-bold transition-colors disabled:cursor-not-allowed disabled:opacity-50; }
+@utility btn { @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-full px-5 text-[15px] font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50; }
 @utility btn-primary { @apply btn bg-forest text-white hover:bg-forest-2; }
-@utility btn-secondary { @apply btn border border-[#bad2c5] bg-white text-forest hover:border-forest; }
+@utility btn-secondary { @apply btn border border-[#c9bfa9] bg-paper text-olive hover:border-olive; }
 @utility btn-ghost { @apply btn text-forest hover:bg-mint; }
-@utility btn-danger { @apply btn border border-red-200 bg-white text-red-800 hover:bg-red-50; }
+@utility btn-danger { @apply btn border border-red-200 bg-paper text-red-800 hover:bg-red-50; }
 @utility field-label { @apply mb-1.5 block text-sm font-semibold text-ink; }
 @utility field-hint { @apply mt-1 block text-xs text-muted; }
-@utility field { @apply block min-h-11 w-full rounded-xl border border-line bg-white px-3.5 py-2.5 text-base text-ink focus:border-forest focus:outline-none focus:ring-2 focus:ring-forest/20; }
-@utility card { @apply rounded-[18px] border border-line bg-white shadow-[0_5px_24px_#152e2b08]; }
-@utility eyebrow { @apply text-xs font-extrabold uppercase tracking-[0.12em] text-[#286b58]; }
+@utility field { @apply block min-h-11 w-full rounded-xl border border-[#cfc4b1] bg-paper px-3.5 py-2.5 text-base text-ink focus:border-forest focus:outline-none focus:ring-2 focus:ring-forest/20; }
+@utility card { @apply rounded-[14px] border border-line bg-paper shadow-[0_4px_18px_#3a462608]; }
+@utility eyebrow { @apply text-xs font-bold uppercase tracking-[0.14em] text-rust-deep; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
@@ -53,3 +76,15 @@ body { @apply bg-stone text-ink font-sans antialiased; }
 
 .prose-plain p { margin-bottom: 1rem; line-height: 1.7; }
 .prose-plain p:last-child { margin-bottom: 0; }
+
+/* Editorial helpers */
+@utility display { @apply font-serif font-medium tracking-[-0.02em] text-olive; }
+@utility link { @apply font-semibold text-olive underline decoration-rust/60 decoration-2 underline-offset-4 hover:decoration-rust; }
+.prose-plain a { text-decoration: underline; }
+
+@media print {
+  header, footer, .no-print { display: none !important; }
+  body { background: #fff; }
+  main { padding: 0; }
+  .plan section { break-inside: avoid; }
+}

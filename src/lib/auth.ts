@@ -14,7 +14,7 @@ export type VolunteerCtx =
   | { mode: 'live'; supabase: SupabaseClient; user: User; role: Role }
   | { mode: 'demo'; user: { email: string }; role: Role };
 
-export const isDemo = () => !isSupabaseConfigured();
+export const isDemo = () => !isSupabaseConfigured() && process.env.VERCEL_ENV !== 'production';
 const DEMO: VolunteerCtx = { mode: 'demo', user: { email: 'demo volunteer' }, role: 'admin' };
 
 /** Use at the top of every admin page. getUser() validates the session with Supabase on every call. */

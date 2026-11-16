@@ -8,7 +8,7 @@ export default async function LoginPage({ searchParams }: PageProps<'/admin/logi
   if (!isSupabaseConfigured()) redirect('/admin');
   const expired = (await searchParams).link === 'expired';
   return (
-    <AuthShell title="Sign in" intro="For authorised volunteers who maintain the directory. Accounts are created by an IFAFA administrator.">
+    <AuthShell title="Sign in" intro="For authorised volunteers who maintain the directory. Accounts are created by an Workbreak administrator.">
       {expired && <p role="alert" className="mb-4 rounded-xl bg-unverified-bg px-4 py-3 text-sm text-unverified">That email link has expired or was already used. Request a new password reset link below.</p>}
       <LoginForm />
     </AuthShell>

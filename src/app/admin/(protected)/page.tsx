@@ -30,7 +30,7 @@ export default async function Overview() {
           <p className="mt-1 font-serif text-4xl font-semibold">{nothingToDo ? 'Nothing due' : `About ${Math.max(5, Math.ceil(w.minutes / 5) * 5)} minutes`}</p>
           <p className="mt-1 text-sm text-white/80">{nothingToDo ? (ctx.mode === 'demo' ? 'Run a live check of the watched sources to see how changes are flagged.' : 'Everything is checked and current.') : 'Based on the items below: about 5 minutes per changed page, 4 per suggestion and 3 per routine re-check.'}</p>
         </div>
-        <Link href={w.changed || ctx.mode === 'demo' ? '/admin/sources' : '/admin/listings'} className="btn shrink-0 bg-white text-forest hover:bg-mint">{ctx.mode === 'demo' ? 'Check the sources live →' : 'Start →'}</Link>
+        <Link href={w.changed || ctx.mode === 'demo' ? '/admin/sources' : '/admin/listings'} className="btn shrink-0 bg-paper text-forest hover:bg-mint">{ctx.mode === 'demo' ? 'Check the sources live →' : 'Start →'}</Link>
       </section>
 
       <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

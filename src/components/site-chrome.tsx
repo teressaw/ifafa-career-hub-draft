@@ -1,34 +1,39 @@
 import Link from 'next/link';
 import { contactEmail, mailto } from '@/lib/contact';
 
+/** The typeset wordmark. The hand-drawn lettering lives in the hero artwork; this is the everyday, accessible version. */
+export function Wordmark({ size = 'md' }: { size?: 'md' | 'lg' }) {
+  return (
+    <span className={`font-serif font-semibold tracking-[-0.03em] text-olive ${size === 'lg' ? 'text-[34px]' : 'text-[27px]'} leading-none`}>
+      workbreak<span className="text-rust">.</span>
+    </span>
+  );
+}
+
 export function Logo() {
   return (
-    <Link href="/" className="inline-flex min-h-11 items-center gap-3" aria-label="IFAFA Career Hub, home">
-      <span aria-hidden="true" className="grid size-10 place-items-center rounded-xl bg-forest text-[23px] text-white">✦</span>
-      <span className="text-[19px] font-extrabold leading-[1.1] text-ink">IFAFA<br />Career Hub</span>
+    <Link href="/" className="inline-flex min-h-11 items-center rounded-md" aria-label="Workbreak, home">
+      <Wordmark />
     </Link>
   );
 }
 
 export const NAV = [
   { href: '/opportunities', label: 'Opportunities' },
-  { href: '/events', label: 'Events' },
-  { href: '/support', label: 'Career support' },
-  { href: '/resources', label: 'Resources' },
-  { href: '/about', label: 'How it works' },
+  { href: '/employers', label: 'For employers' },
+  { href: '/returnships', label: 'Returnships, explained' },
+  { href: '/about', label: 'About' },
 ];
 
 export function SiteHeader() {
-  const email = contactEmail();
   return (
-    <header className="sticky top-0 z-30 border-b border-line bg-white">
-      <div className="container-page flex flex-col gap-2 py-3 md:flex-row md:items-center md:justify-between md:gap-6">
+    <header className="sticky top-0 z-30 border-b border-line bg-cream/95 backdrop-blur supports-[backdrop-filter]:bg-cream/85">
+      <div className="container-page flex flex-col gap-1 py-2.5 md:flex-row md:items-center md:justify-between md:gap-6">
         <Logo />
-        <nav aria-label="Main" className="-mx-2 flex flex-wrap items-center gap-x-1 gap-y-0 text-sm font-semibold">
+        <nav aria-label="Main" className="-mx-2 flex flex-wrap items-center gap-x-0.5 text-[15px] font-semibold">
           {NAV.map(n => (
-            <Link key={n.href} href={n.href} className="inline-flex min-h-11 items-center rounded-lg px-2 text-ink hover:text-forest lg:px-3">{n.label}</Link>
+            <Link key={n.href} href={n.href} className="inline-flex min-h-11 items-center rounded-lg px-2 text-ink-soft hover:text-olive lg:px-3">{n.label}</Link>
           ))}
-          {email && <a href={mailto(email, 'IFAFA Career Hub updates')} className="btn-primary ml-1 min-h-10 px-4">Get updates</a>}
         </nav>
       </div>
     </header>
@@ -36,22 +41,31 @@ export function SiteHeader() {
 }
 
 export function SiteFooter() {
+  const email = contactEmail();
   return (
-    <footer className="mt-24 border-t border-line bg-white">
-      <div className="container-page grid gap-8 py-12 text-sm text-muted md:grid-cols-[1.4fr_1fr]">
+    <footer className="mt-24 border-t border-line bg-stone-2">
+      <div className="container-page grid gap-10 py-12 text-sm text-muted md:grid-cols-[1.3fr_1fr_1fr]">
         <div>
-          <Logo />
-          <p className="mt-4 max-w-md leading-relaxed">
-            Opportunities and practical support for accompanying partners of Irish diplomatic staff — whether working during a posting, preparing to return to Ireland or restarting a career.
+          <Wordmark />
+          <p className="mt-2 font-serif text-lg italic text-olive">Life isn’t a career break.</p>
+          <p className="mt-4 max-w-sm leading-relaxed">
+            An independent, Ireland-first project helping people return to paid work, and helping employers build better ways back.
+            We’re at an early stage: coverage is growing and every listing is checked by a person before it appears.
           </p>
-          <nav aria-label="Footer" className="mt-4 flex flex-wrap gap-x-4 gap-y-1">
-            {NAV.map(n => <Link key={n.href} href={n.href} className="inline-flex min-h-9 items-center hover:text-forest hover:underline">{n.label}</Link>)}
-          </nav>
         </div>
-        <div className="space-y-3">
-          <p className="font-semibold text-ink">Please note</p>
-          <p className="leading-relaxed">Everything here is checked by IFAFA volunteers against official sources, but details can change. Always confirm eligibility, dates and terms with the employer or provider before applying.</p>
-          <p><Link href="/about" className="font-semibold text-forest hover:underline">How listings are verified</Link> · <Link href="/admin" className="hover:underline">Volunteer sign-in</Link></p>
+        <nav aria-label="Footer: explore" className="space-y-1">
+          <p className="mb-2 font-semibold text-ink">Explore</p>
+          {[...NAV, { href: '/events', label: 'Events' }, { href: '/support', label: 'Career support' }, { href: '/resources', label: 'Practical resources' }].map(n => (
+            <Link key={n.href} href={n.href} className="block min-h-8 py-1 hover:text-olive hover:underline">{n.label}</Link>
+          ))}
+        </nav>
+        <div className="space-y-1">
+          <p className="mb-2 font-semibold text-ink">About the listings</p>
+          <p className="leading-relaxed">Details change. Always confirm eligibility, dates and pay with the employer before applying.</p>
+          <Link href="/about#listings" className="block min-h-8 py-1 hover:text-olive hover:underline">How listings are checked</Link>
+          <Link href="/privacy" className="block min-h-8 py-1 hover:text-olive hover:underline">Privacy</Link>
+          {email && <a href={mailto(email, 'Workbreak')} className="block min-h-8 py-1 hover:text-olive hover:underline">Contact</a>}
+          <Link href="/admin" className="block min-h-8 py-1 hover:text-olive hover:underline">Team sign-in</Link>
         </div>
       </div>
     </footer>
